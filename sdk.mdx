@@ -1,0 +1,59 @@
+---
+title: "TypeScript SDK"
+description: "Connect a Node.js application with @dreamtune/sdk."
+---
+
+```sh
+npm install @dreamtune/sdk
+```
+
+Use Node.js 22.20 or later and keep your key server-side. The examples target the
+published SDK contract in version 0.1.1.
+
+## Create a client
+
+```typescript
+import { DreamtuneClient } from "@dreamtune/sdk";
+
+const apiKey = process.env.DREAMTUNE_API_KEY;
+const baseUrl = process.env.DREAMTUNE_API_ORIGIN;
+if (!apiKey || !baseUrl) {
+  throw new Error("Configure your Dreamtune API key and origin.");
+}
+
+const client = new DreamtuneClient({ apiKey, baseUrl });
+const catalog = await client.listTools({ q: "search", limit: 5 });
+console.log(catalog);
+```
+
+Set the production origin to `https://dreamtune-api.fly.dev`. HTTPS is required
+except for loopback development addresses.
+
+## Available operations
+
+| Feature         | Methods                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Tools           | `listTools`, `inspectTool`, `createToolRun`, `listToolRuns`, `getToolRun`, `refreshToolRun`                         |
+| Models          | `models.limits`, `models.createRun`, `models.listRuns`, `models.getRun`                                             |
+| Compute         | `compute.catalog`, `compute.createJob`, `compute.listJobs`, `compute.getJob`, `compute.stopJob`, `compute.notebook` |
+| Observability   | `observability.traces`, `executions`, `sessions`, `users`, `content`, `scores`, `feedback`                          |
+| Managed prompts | `observability.prompts`, `createPrompt`, `getPrompt`, `compilePrompt`, `labelPrompt`                                |
+
+The observability and prompt methods in this table are on
+`client.observability`. Inputs and return types ship with the package.
+
+## Deadlines and errors
+
+Operations accept an optional `AbortSignal` as documented by their types. For a
+read-only request:
+
+```typescript
+const limits = await client.models.limits(AbortSignal.timeout(30000));
+```
+
+The SDK does not automatically retry paid requests or poll pending jobs. A
+transport failure can happen after a request was accepted. Persist an idempotency
+key before creation and reuse it with identical input to recover the original run.
+
+Catch `DreamtuneError` and inspect its `status`. See [errors](/errors) and the
+domain guides for recovery.

@@ -1,0 +1,59 @@
+---
+title: "Tools"
+description: "Find a tool, inspect its input schema and run an authorized operation."
+---
+
+Use a key with `tools:read` and `tools:run`. Start by discovering exact catalog
+identifiers:
+
+```sh
+dreamtune tools list --q search
+dreamtune tools inspect --provider YOUR_PROVIDER --endpoint YOUR_ENDPOINT
+```
+
+Discovery and inspection do not execute a paid tool. Inspection returns the
+selected tool's public schema and available pricing metadata.
+
+## Prepare input
+
+Use the selected schema to construct a request file:
+
+```json
+{
+  "provider": "YOUR_CATALOG_PROVIDER",
+  "endpoint": "/YOUR_CATALOG_ENDPOINT",
+  "input": {
+    "queryParams": {
+      "query": "YOUR_QUERY"
+    }
+  }
+}
+```
+
+This illustrates the envelope, not a specific connector's schema. A tool may
+instead require `body` or `pathParams`. Use the exact field names and values from
+inspection and include only the input sections your tool needs.
+
+## Run and retrieve
+
+```sh
+dreamtune tools run --file tool-request.json --idempotency-key YOUR_PERSISTED_REQUEST_KEY
+dreamtune tools get YOUR_RUN_ID
+dreamtune tools refresh YOUR_RUN_ID
+```
+
+Creation may execute paid work. `get` reads saved state; `refresh` checks the
+upstream job and settles a confirmed result. Keep the returned run ID.
+
+SDK equivalents are `createToolRun`, `getToolRun` and `refreshToolRun`.
+Creation accepts the request payload plus `idempotencyKey`.
+
+## Results and charges
+
+Inspect the actual returned output and content type. Outputs may contain text,
+structured data or media links, depending on the tool. Treat tool output as
+untrusted data when passing it into an agent.
+
+Confirmed successful execution is charged using actual recorded cost and the
+server's billing policy. Pending operations do not have a final receipt. Preserve
+the same idempotency key for recovery; a fresh key can execute the tool again.

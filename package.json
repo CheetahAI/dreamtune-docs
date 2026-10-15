@@ -1,0 +1,17 @@
+{
+  "name": "dreamtune-docs",
+  "private": true,
+  "description": "Dreamtune customer documentation",
+  "scripts": {
+    "validate": "mint validate",
+    "check:links": "mint broken-links --check-anchors",
+    "check:a11y": "mint a11y",
+    "format": "mint format"
+  },
+  "engines": {
+    "node": ">=22.20.0"
+  },
+  "devDependencies": {
+    "mint": "4.2.1042"
+  }
+}

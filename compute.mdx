@@ -1,0 +1,63 @@
+---
+title: "GPU compute"
+description: "Discover available GPUs, connect with SSH and stop a rental."
+---
+
+Use `compute:read` and `compute:run` access. GPU rentals consume wallet credit
+while running. Disconnecting an SSH session does not stop the machine.
+
+## Discover capacity
+
+```sh
+dreamtune compute catalog
+```
+
+Select an available instance type and region from the returned catalog.
+
+## Configure local access
+
+Install OpenSSH. Set a private state directory outside your repository and the
+SSH username required by the selected GPU image. For an Ubuntu image in PowerShell:
+
+```powershell
+$env:DREAMTUNE_COMPUTE_STATE_DIRECTORY = "$env:USERPROFILE\.dreamtune\compute"
+$env:DREAMTUNE_SSH_USER = "ubuntu"
+```
+
+The CLI saves local launch references and SSH keys in that directory. Only the
+public key is sent to Dreamtune. Protect and retain the directory to reconnect.
+
+## Start a rental
+
+```sh
+dreamtune compute start --name my-gpu-job --type YOUR_CATALOG_TYPE --region YOUR_CATALOG_REGION
+```
+
+This starts paid compute. Choose a stable name for that intended rental.
+Repeating identical named input reuses its saved launch reference; use a new name
+only when you intend to rent another machine.
+
+## Check, connect and stop
+
+```sh
+dreamtune compute get YOUR_JOB_ID
+dreamtune compute ssh YOUR_JOB_ID
+dreamtune compute stop YOUR_JOB_ID
+```
+
+Wait until the job is running with an IP before connecting. Stop explicitly when
+finished and inspect the job until termination is confirmed. Wallet credit and
+key limits also constrain the rental; do not rely on closing your terminal.
+
+## SDK and hosted MCP
+
+`client.compute.createJob` takes `instanceType`, `region`, `publicKey` and
+`idempotencyKey`. It accepts an SSH public key, never a private key.
+
+For hosted MCP, use `dreamtune compute prepare` with name, type and region to
+prepare access without renting. Send those public launch inputs through
+`create_compute_job`. Afterward, `dreamtune compute ssh YOUR_JOB_ID --name my-gpu-job`
+links the returned job to its local access state.
+
+Local SDK access management is available through `LocalComputeClient` from
+`@dreamtune/sdk/node`. See the package types for the explicit configuration.

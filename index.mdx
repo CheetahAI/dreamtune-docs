@@ -1,0 +1,43 @@
+---
+title: "Build with Dreamtune"
+description: "One API key for models, tools, GPU compute and observability."
+---
+
+Connect your application or agent to Dreamtune with a workspace API key. Use the
+TypeScript SDK, terminal CLI, or MCP connection to run supported operations and
+inspect their progress and charges.
+
+<Columns cols={2}>
+  <Card title="Make your first request" icon="rocket" href="/quickstart">
+    Create a key, install the SDK and discover tools.
+  </Card>
+  <Card title="Connect an agent" icon="plug" href="/mcp">
+    Use the hosted MCP endpoint or a local stdio server.
+  </Card>
+  <Card title="Run models and tools" icon="code" href="/models">
+    Send model requests and connect function calls to tools you authorize.
+  </Card>
+  <Card title="Rent a GPU" icon="microchip" href="/compute">
+    Discover available machines, connect and stop a rental.
+  </Card>
+</Columns>
+
+## Choose your connection
+
+| You are building with      | Use                         |
+| -------------------------- | --------------------------- |
+| The Dreamtune website      | Your browser and dashboard  |
+| A Node.js application      | [TypeScript SDK](/sdk)      |
+| A terminal                 | [Dreamtune CLI](/cli)       |
+| An MCP-compatible agent    | [Hosted or local MCP](/mcp) |
+| An agent that loads skills | [Bundled skills](/skills)   |
+
+## Track the work
+
+[Observability](/observability) connects requests to stages, sessions, captured
+content and recorded usage. Access follows the workspace and scopes of your key.
+[Billing](/billing) explains wallet credit, optional key limits and final receipts.
+
+The SDK package is `@dreamtune/sdk`. Its local agent commands run on your own
+computer; they do not create a hosted agent deployment. Use the documented
+Dreamtune client methods rather than assuming OpenAI-compatible endpoints.

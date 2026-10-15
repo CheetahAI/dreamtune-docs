@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="194" height="32" viewBox="0 0 194 32" role="img" aria-label="Dreamtune">
+  <path d="M16 2 30 16 16 30 2 16Z" fill="#1b1a18"/>
+  <path d="M16 10 22 16 16 22 10 16Z" fill="#fff"/>
+  <path d="M16 1v9m15 6h-9M16 31v-9M1 16h9" stroke="#fff" stroke-width="2"/>
+  <text x="41" y="24" fill="#1b1a18" font-family="Arial, sans-serif" font-size="25" font-weight="600" letter-spacing="-1">Dreamtune</text>
+</svg>

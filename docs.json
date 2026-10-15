@@ -1,0 +1,53 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Dreamtune",
+  "description": "Build with models, tools, GPU compute and observability through one Dreamtune API key.",
+  "colors": {
+    "primary": "#A83F29",
+    "light": "#FF8A70",
+    "dark": "#DC5238"
+  },
+  "background": {
+    "color": { "light": "#FFFFFF", "dark": "#1B1A18" }
+  },
+  "appearance": { "default": "light" },
+  "logo": {
+    "light": "/images/logo-light.svg",
+    "dark": "/images/logo-dark.svg"
+  },
+  "favicon": "/images/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Get started",
+            "pages": ["index", "quickstart", "authentication"]
+          },
+          {
+            "group": "Connect",
+            "pages": ["sdk", "cli", "mcp", "skills"]
+          },
+          {
+            "group": "Build",
+            "pages": ["models", "tools", "compute", "observability"]
+          },
+          {
+            "group": "Manage",
+            "pages": ["billing", "errors"]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [{ "label": "Website", "href": "https://dreamtunelabs.com" }],
+    "primary": {
+      "type": "button",
+      "label": "Open dashboard",
+      "href": "https://dreamtunelabs.com/dashboard/"
+    }
+  }
+}

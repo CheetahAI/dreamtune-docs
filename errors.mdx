@@ -1,0 +1,40 @@
+---
+title: "Errors and recovery"
+description: "Handle authentication, spending limits, conflicts and interrupted requests."
+---
+
+The SDK throws `DreamtuneError` with a `status`. CLI failures exit nonzero and
+print a redacted error. MCP tools report failures using `isError: true`.
+
+| Status | Meaning                                          | Next action                                                                            |
+| ------ | ------------------------------------------------ | -------------------------------------------------------------------------------------- |
+| `0`    | Transport failed or the request was interrupted  | Inspect the existing run or recover with identical input and its saved idempotency key |
+| `400`  | Invalid input or configuration                   | Check the schema and explicit client settings                                          |
+| `401`  | Invalid, expired or revoked key                  | Check the key and environment                                                          |
+| `402`  | Wallet or spending-limit admission failed        | Check the owning wallet and applicable key cap                                         |
+| `403`  | Missing scope or operation permission            | Check the key's selected access                                                        |
+| `404`  | Resource unavailable in this workspace           | Check the ID and workspace                                                             |
+| `409`  | Conflicting replay or active workspace operation | Inspect the existing operation and reuse its original input                            |
+| `429`  | Rate limit reached                               | Respect the service limit; avoid concurrent retries                                    |
+| `502`  | Invalid upstream/API response                    | Inspect saved state before another paid submission                                     |
+| `503`  | Required service unavailable                     | Check existing work before resubmitting                                                |
+
+## Persist before submission
+
+Create and save a unique 16–128 character idempotency key for each intended
+model, tool or compute operation before sending it. Keep the same key and input
+when recovering an uncertain submission. Reusing a key for changed input is a
+conflict; using a fresh key can start another paid operation.
+
+## Timeouts
+
+Aborting an HTTP request stops the client from waiting. It does not cancel an
+accepted provider job or terminate a GPU. Retrieve the saved run, refresh a tool
+receipt where appropriate, or stop compute explicitly.
+
+## Unresolved execution
+
+A run that needs reconciliation remains unresolved until its actual upstream
+state can be verified. Do not treat an unresolved submission as a failed, free
+operation or repeatedly submit replacements. Keep the saved request information
+for investigation.

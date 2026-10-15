@@ -1,0 +1,66 @@
+---
+title: "Connect MCP"
+description: "Give your agent scoped access through hosted HTTP or local stdio MCP."
+---
+
+## Hosted connection
+
+Use an MCP client that supports Streamable HTTP and custom request headers:
+
+| Setting      | Value                               |
+| ------------ | ----------------------------------- |
+| Transport    | Streamable HTTP                     |
+| Server URL   | `https://mcp.dreamtunelabs.com/mcp` |
+| Header name  | `X-Dreamtune-API-Key`               |
+| Header value | Your production Dreamtune API key   |
+
+Save the key in your client's protected credential settings. Configuration syntax
+varies by client. Hosted MCP uses your key directly; it does not provide browser
+OAuth login. Choose local MCP if your client cannot supply the required header.
+
+## Local connection
+
+Install the CLI:
+
+```sh
+npm install --global @dreamtune/sdk
+```
+
+A client that accepts this stdio configuration can launch Dreamtune with:
+
+```json
+{
+  "mcpServers": {
+    "dreamtune": {
+      "command": "dreamtune",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Supply `DREAMTUNE_API_KEY`, `DREAMTUNE_API_ORIGIN` and
+`DREAMTUNE_REQUEST_TIMEOUT_MS` to that process through your client's environment
+settings. Environment inheritance differs between clients. The package also
+provides the `dreamtune-mcp` executable.
+
+## What the agent can do
+
+The server exposes catalog discovery and inspection, tool runs, model runs,
+compute jobs and observability operations. Your key's scopes and workspace
+ownership are checked for each operation.
+
+List the local tool definitions without executing a paid operation:
+
+```sh
+dreamtune mcp tools
+```
+
+A model choosing a tool does not grant additional permissions. Only authorize
+the operations and spending your task requires.
+
+## GPU access
+
+Hosted compute creation requires an explicit SSH public key. Use the CLI's
+`compute prepare` workflow to prepare local access first. The hosted server cannot
+save a private key on your computer. See [compute](/compute).

@@ -1,0 +1,82 @@
+---
+title: "Observability"
+description: "Inspect request stages, conversation history, usage and prompt versions."
+---
+
+The dashboard and developer API expose observations for your workspace. Your
+key's read scopes determine which model, tool and compute activity it can access.
+An end-user identifier attaches context; it does not grant access to a workspace.
+
+## Inspect requests
+
+```sh
+dreamtune observability list --page 1
+dreamtune observability sessions --page 1
+dreamtune observability users --page 1
+dreamtune observability content YOUR_REQUEST_ID
+dreamtune observability scores YOUR_REQUEST_ID
+```
+
+Use the request ID returned by the observability listing for content and scores.
+It is not interchangeable with every execution run or provider job identifier.
+Content is paginated; media access uses expiring signed URLs.
+
+## Trace stages
+
+Save a query as `traces.json`:
+
+```json
+{
+  "category": "model",
+  "from": "2026-10-01",
+  "to": "2026-10-16"
+}
+```
+
+Choose your own UTC dates, up to 93 calendar days inclusive, then run:
+
+```sh
+dreamtune observability traces --file traces.json
+```
+
+The response includes stage timing and available token/cost metrics. Use its
+cursor to request subsequent pages. A missing measurement does not mean zero.
+
+## Attach a conversation
+
+For CLI and local MCP processes, set `DREAMTUNE_SESSION_ID` and optionally
+`DREAMTUNE_END_USER_ID`. Use stable identifiers appropriate to your application.
+
+SDK clients can attach the same context:
+
+```typescript
+const client = new DreamtuneClient({
+  apiKey,
+  baseUrl,
+  observability: {
+    sessionId: "support-conversation-42",
+    endUserId: "customer-42",
+  },
+});
+```
+
+Reusing a request key with conflicting context fails rather than changing the
+original request's attribution. Session IDs accept letters, numbers, underscores
+and hyphens, up to 128 characters.
+
+## Prompts, feedback and assessments
+
+`client.observability` supports creating, selecting, compiling and labeling managed
+prompt versions. Templates accept string variables and message placeholders.
+Select exactly one prompt version or deployment label when using a managed prompt.
+
+```sh
+dreamtune observability prompts --page 1
+dreamtune observability prompt-create --help
+dreamtune observability feedback YOUR_REQUEST_ID --value 1 --comment "Helpful answer"
+```
+
+Scores may include a request assessment when that request has been evaluated.
+These judgments support human review; they are not proof that an answer is
+correct or that a user violated an agreement. Captured content depends on the
+request and the platform's capture/retention settings.

@@ -1,0 +1,61 @@
+---
+title: "Quickstart"
+description: "Create a workspace key and make your first read-only request."
+---
+
+## 1. Create a key
+
+Sign in to [Dreamtune](https://dreamtunelabs.com/dashboard/) and open
+[API keys](https://dreamtunelabs.com/dashboard/api-keys/). Select Tools access
+for this guide and save the key when it appears.
+
+For paid operations, add credit in
+[Usage & billing](https://dreamtunelabs.com/dashboard/usage/). A key belongs to
+the workspace that created it. See [authentication](/authentication).
+
+## 2. Install
+
+Use Node.js 22.20 or later. In your application:
+
+```sh
+npm install @dreamtune/sdk
+```
+
+For terminal commands:
+
+```sh
+npm install --global @dreamtune/sdk
+```
+
+## 3. Configure your connection
+
+Supply your own production key through your application's secret settings.
+The production API origin is `https://dreamtune-api.fly.dev`.
+
+For a PowerShell terminal, set these process variables. Replace the example key:
+
+```powershell
+$env:DREAMTUNE_API_ORIGIN = "https://dreamtune-api.fly.dev"
+$env:DREAMTUNE_API_KEY = "YOUR_DREAMTUNE_API_KEY"
+$env:DREAMTUNE_REQUEST_TIMEOUT_MS = "60000"
+```
+
+The timeout is your chosen request deadline in milliseconds. A deadline stops
+waiting; accepted upstream work can continue. Keep credentials outside source
+control and browser bundles.
+
+## 4. Discover tools
+
+```sh
+dreamtune tools list --q search
+```
+
+This lists matching tool identifiers. It does not execute a paid tool. Inspect a
+selected tool's schema before running it; see [tools](/tools).
+
+## Next steps
+
+- [Use the SDK](/sdk) in a server-side application.
+- [Connect MCP](/mcp) to your agent.
+- [Run a model](/models) with an explicit model choice.
+- [Inspect requests and sessions](/observability).

@@ -1,0 +1,58 @@
+---
+title: "Terminal CLI"
+description: "Discover services, run requests and read results from your terminal."
+---
+
+## Install and configure
+
+```sh
+npm install --global @dreamtune/sdk
+dreamtune --help
+```
+
+Configure `DREAMTUNE_API_KEY`, `DREAMTUNE_API_ORIGIN` and
+`DREAMTUNE_REQUEST_TIMEOUT_MS` using the [quickstart](/quickstart). Help and skill
+installation work without a key. API commands require those settings.
+
+## Discover and read
+
+```sh
+dreamtune tools list --q search
+dreamtune models limits
+dreamtune models runs
+dreamtune compute catalog
+dreamtune observability list --page 1
+```
+
+Use each command group's `--help` for its options:
+
+```sh
+dreamtune tools --help
+dreamtune models --help
+dreamtune compute --help
+dreamtune observability --help
+```
+
+## Submit a request
+
+Tool and model commands read a JSON payload from a file. The idempotency key is a
+separate argument. Persist it before submission and reuse it only for identical
+input.
+
+```sh
+dreamtune models run --file model-request.json --idempotency-key YOUR_PERSISTED_REQUEST_KEY
+dreamtune models get YOUR_RUN_ID
+```
+
+See [models](/models) and [tools](/tools) for file contents. Execution may spend
+wallet credit. Reading a returned run ID lets you recover its saved result.
+
+## Command output
+
+Successful API commands print JSON to stdout. Failures print redacted errors to
+stderr and exit nonzero. Commands do not automatically choose another provider,
+retry failed work or poll indefinitely.
+
+`dreamtune research` and `dreamtune agent` run local workflows through MCP. Consult
+their `--help` and the published SDK README before preparing their explicit model,
+tool bindings, persisted request keys and operation budgets.

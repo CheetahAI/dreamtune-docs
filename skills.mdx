@@ -1,0 +1,38 @@
+---
+title: "Agent skills"
+description: "Install Dreamtune instructions into an agent that loads skills."
+---
+
+Skills are instruction files that teach an agent how to use Dreamtune's CLI and
+MCP operations. They do not contain API credentials or grant permissions.
+
+## Install
+
+```sh
+npm install --global @dreamtune/sdk
+dreamtune skills list
+dreamtune skills install all --directory YOUR_AGENT_SKILLS_DIRECTORY
+```
+
+Choose the actual directory your agent reads. Installation creates one named
+directory per skill, each containing `SKILL.md`. It refuses to overwrite an
+existing skill directory.
+
+## Bundled skills
+
+| Skill                     | Purpose                                                    |
+| ------------------------- | ---------------------------------------------------------- |
+| `dreamtune-platform`      | Choose an interface and follow workspace and billing rules |
+| `dreamtune-tools`         | Discover, inspect and execute tools                        |
+| `dreamtune-models`        | Submit model requests and handle function calls            |
+| `dreamtune-compute`       | Prepare access, launch, inspect and stop GPUs              |
+| `dreamtune-observability` | Inspect traces, sessions, users and prompts                |
+
+You can install a single skill:
+
+```sh
+dreamtune skills install dreamtune-tools --directory YOUR_AGENT_SKILLS_DIRECTORY
+```
+
+Configure the agent's [MCP connection](/mcp) or [CLI environment](/cli) separately.
+Installing a skill does not configure credentials, start an agent or execute work.

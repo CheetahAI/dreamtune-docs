@@ -1,0 +1,53 @@
+---
+title: "API keys and permissions"
+description: "Connect a workspace, choose access and protect your credentials."
+---
+
+Create keys in the [dashboard](https://dreamtunelabs.com/dashboard/api-keys/).
+Your key identifies its workspace. Requests do not need a tenant identifier or
+upstream provider credential.
+
+## Choose access
+
+| Capability                        | API scopes     |
+| --------------------------------- | -------------- |
+| Discover tools and read tool runs | `tools:read`   |
+| Execute tools                     | `tools:run`    |
+| Read model limits and runs        | `models:read`  |
+| Execute models                    | `models:run`   |
+| Read compute catalog and jobs     | `compute:read` |
+| Launch and stop compute           | `compute:run`  |
+
+Select only the capabilities your application needs. Observability reads also
+enforce the relevant category's read access and workspace ownership.
+
+## Spending limits
+
+Model, tool and compute caps are optional and cumulative for that key. Leave a
+cap blank to use available wallet credit. When a configured cap is reached, the
+key cannot start more work in that category. See [billing](/billing) for settlement
+and operations that finish above the remaining limit.
+
+## Send the key
+
+The SDK and CLI send the key in an authorization header. Direct HTTP requests use:
+
+```http
+Authorization: Bearer YOUR_DREAMTUNE_API_KEY
+```
+
+Hosted MCP uses a different, dedicated header:
+
+```http
+X-Dreamtune-API-Key: YOUR_DREAMTUNE_API_KEY
+```
+
+Production keys start with `dt_live_`. Development keys start with `dt_dev_` and
+cannot authenticate to production. Keep keys in server-side secret settings or
+your MCP client's protected credentials. Never place a key in a URL or tool input.
+
+## Revoke a key
+
+Revoke a key in the dashboard when access should end or the key is exposed.
+An authentication failure does not mean an earlier accepted run was cancelled.
+Read existing run state before attempting paid work again.

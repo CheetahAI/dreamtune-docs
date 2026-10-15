@@ -1,0 +1,68 @@
+---
+title: "Model requests"
+description: "Choose a model, submit a conversation and retrieve its saved result."
+---
+
+Choose an exact model ID from the [Models catalog](https://dreamtunelabs.com/models/).
+Use a key with `models:read` and `models:run`, and a positive workspace wallet.
+
+## Read limits
+
+```sh
+dreamtune models limits
+```
+
+Keep prompt length and `maxOutputTokens` within the returned limits.
+
+## Submit a conversation
+
+Save this structure as `model-request.json`, replacing `provider/model-id` with
+your selected catalog ID:
+
+```json
+{
+  "model": "provider/model-id",
+  "messages": [
+    { "role": "system", "content": "Answer clearly and concisely." },
+    { "role": "user", "content": "Explain what an API key does." }
+  ],
+  "maxOutputTokens": 256
+}
+```
+
+Persist a unique 16–128 character idempotency key, then submit:
+
+```sh
+dreamtune models run --file model-request.json --idempotency-key YOUR_PERSISTED_REQUEST_KEY
+```
+
+This can spend credit. A completed response includes its saved run ID, assistant
+output and recorded usage. Pending states require checking the same run:
+
+```sh
+dreamtune models get YOUR_RUN_ID
+```
+
+For the SDK, use `client.models.createRun` with the same payload plus
+`idempotencyKey`. Use `client.models.getRun(id)` to read it.
+
+## Function calling
+
+Model requests accept function definitions in `tools`, with optional
+`tool_choice` and `parallel_tool_calls`. When the model returns tool calls:
+
+1. Preserve the returned assistant `message`, including tool calls and reasoning
+   details when present.
+2. Execute only the tool bindings you authorized.
+3. Append one `role: "tool"` result with the matching `tool_call_id` per call.
+4. Send the next model turn with the same function definitions and a new persisted
+   operation key.
+
+Calling a model does not automatically execute its requested tools. The CLI's
+local `agent` command provides a separate model-directed MCP workflow.
+
+## Recovery
+
+Reuse the same idempotency key and identical input after an ambiguous submission.
+Changing input with that key produces a conflict. A timeout does not prove the
+provider stopped or that a successful result will be free. See [errors](/errors).

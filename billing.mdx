@@ -1,0 +1,52 @@
+---
+title: "Wallet and spending"
+description: "Understand workspace credit, optional key limits and run receipts."
+---
+
+Add credit in [Usage & billing](https://dreamtunelabs.com/dashboard/usage/).
+The wallet belongs to the workspace. API keys spend from that workspace's
+available balance according to their enabled capabilities.
+
+## Optional key limits
+
+You can set separate cumulative spending limits for models, tools and compute
+when creating a key. A blank limit allows that category to use wallet credit.
+It does not provide credit after the wallet is exhausted.
+
+New paid work requires a positive balance and remaining applicable key budget.
+One billable operation can be active per workspace across these categories.
+
+## Model and tool settlement
+
+Successful operations settle using confirmed actual cost and the saved server
+billing policy. A final receipt can include:
+
+| Field            | Meaning                      |
+| ---------------- | ---------------------------- |
+| `cost`           | Recorded execution cost      |
+| `discountAmount` | Server-applied discount      |
+| `fee`            | Recorded platform fee        |
+| `total`          | Final charge                 |
+| `chargedAmount`  | Committed charge for the run |
+
+Amounts are integer strings in USD millionths: `"1000000"` means USD 1.00.
+For a final receipt, `cost - discountAmount + fee = total`.
+Pending runs do not contain a final cost breakdown. Failed new model/tool runs
+have a zero final charge.
+
+An operation that completes successfully can cost more than the remaining key
+budget or wallet balance. Its confirmed cost still settles, and further work is
+blocked until the admission requirements are met. Key limits are not guaranteed
+maximum prices for a single upstream operation.
+
+## Compute
+
+Compute charges recorded runtime at the selected rate and billing policy.
+Stop a rental explicitly when finished and confirm termination. See
+[compute](/compute) for the full workflow.
+
+## Payment confirmation
+
+A checkout return page is not itself proof that wallet credit was posted.
+Check the dashboard's payment status and balance. Fund the owning workspace
+before retrying a balance error.
