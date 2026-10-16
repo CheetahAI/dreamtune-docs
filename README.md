@@ -70,7 +70,7 @@ vault paths and operator login information are excluded.
   meet the CLI's required contrast thresholds. It still advises AAA contrast for
   the primary link color, which meets AA at 6.16:1.
 - Formatting, parent repository verification/contract/size gates and staged
-  Gitleaks scanning passed. All maintained SVG assets are six physical lines;
+  Gitleaks scanning passed. The original Dreamtune SVG assets are six physical lines;
   prose, JSON and the lockfile are not executable code under the size policy.
 - `npm audit --omit=dev --audit-level=high` reported zero production dependencies
   with advisories. This excludes the Mintlify development tool dependency tree;
@@ -82,7 +82,7 @@ Coverage is documentation configuration, navigation, MDX compilation, links,
 accessibility, formatting and source secrets. API authorization, concurrency and
 billing behavior are outside this documentation-only change; source examples
 were reviewed against the published SDK rather than executed with customer keys.
-Confirm hosted publication separately after the GitHub push.
+Hosted publication is verified in the final delivery record below.
 
 ## Expanded documentation, 2026-10-16
 
@@ -104,3 +104,18 @@ primary accent meets AA (6.16:1) and retains the CLI's AAA improvement advisory.
 Published-package CLI help, skill listing and installation of all five skills
 were exercised in an ignored isolated directory. This does not claim live
 execution in every editor or a new paid-provider audit.
+
+## Hosted delivery verified
+
+The existing GitHub integration published all 56 pages at
+https://docs.dreamtunelabs.com. Native Hurl checked the complete navigation,
+exact logo homepage destination, canonical metadata, rendered Copy page control,
+public Markdown, llms index, skills discovery and the public GitHub ZIP download.
+The Dreamtune logo and Home header link both point to the application homepage.
+The application was redeployed with direct links and permanent old-guide redirects.
+
+The final desktop Lighthouse audit reported performance 98, accessibility 97,
+best practices 100 and SEO 100. Its rendered screenshot was inspected. Native
+Mintlify branding/footer contrast remains an accessibility advisory; interactive
+clipboard/editor setup was not verified through a signed-in browser. No paid
+service execution is claimed by these documentation checks.
