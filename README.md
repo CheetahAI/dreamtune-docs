@@ -26,7 +26,7 @@ Validation checks documentation, not live paid provider execution.
 ## Publish
 
 Commit reviewed source changes and push to `origin main`. The connected Mintlify
-GitHub App builds the site. Confirm the deployment in the Mintlify dashboard.
+GitHub App builds the site. Verify the public docs after the existing GitHub integration publishes. No additional dashboard access is required.
 Rollback by reverting the relevant documentation commit and pushing normally.
 No frontend/backend application server or local trace Collector is required.
 
@@ -66,7 +66,7 @@ vault paths and operator login information are excluded.
   preserved. Customer files were written here with supported native configuration.
 - The pinned CLI's strict build validation and internal-link/anchor checks passed.
 - Accessibility initially failed a dark-mode button color. Using the existing
-  website hover accent fixed it. All 13 MDX pages passed media-alt checks; colors
+  website hover accent fixed it. All 56 MDX pages passed media-alt checks; colors
   meet the CLI's required contrast thresholds. It still advises AAA contrast for
   the primary link color, which meets AA at 6.16:1.
 - Formatting, parent repository verification/contract/size gates and staged
@@ -83,3 +83,24 @@ accessibility, formatting and source secrets. API authorization, concurrency and
 billing behavior are outside this documentation-only change; source examples
 were reviewed against the published SDK rather than executed with customer keys.
 Confirm hosted publication separately after the GitHub push.
+
+## Expanded documentation, 2026-10-16
+
+The site now contains 56 MDX pages across Guides, SDK & CLI, Agents & MCP,
+and API reference. It includes 12 client-specific guides, official vendor
+logos, two local workflow tutorials, resource/method/tool references,
+prompt variables, media/session guidance, payment recovery and production
+integration practices. See RESEARCH.md for primary-source research and client
+format distinctions. Roo Code is clearly legacy following its official shutdown.
+
+The header links Home to the application. Native Mintlify contextual controls
+provide Copy page and Markdown. Native llms/skills discovery and distinct
+human/execution/documentation MCP addresses support agent discovery. Published
+0.1.1 skills are included verbatim in .mintlify/skills and downloads, with a ZIP
+and license. No extra service, paid Assistant or agent login flow was added.
+
+Strict build, internal-link/anchor and media accessibility checks pass. The
+primary accent meets AA (6.16:1) and retains the CLI's AAA improvement advisory.
+Published-package CLI help, skill listing and installation of all five skills
+were exercised in an ignored isolated directory. This does not claim live
+execution in every editor or a new paid-provider audit.

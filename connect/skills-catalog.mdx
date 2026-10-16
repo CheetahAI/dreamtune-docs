@@ -1,0 +1,60 @@
+---
+title: "Skills catalog"
+description: "Choose the Dreamtune workflow instructions your application or agent needs."
+---
+
+The five skills below ship with `@dreamtune/sdk` 0.1.1. You can install them
+individually or [download the archive](/downloads/dreamtune-skills.zip).
+
+## Platform
+
+[Open or copy SKILL.md](/downloads/skills/dreamtune-platform/SKILL.md)
+
+`dreamtune-platform` explains interface selection, key/environment setup,
+workspace boundaries, explicit model/tool choices, request replay and spending.
+Install this first when an agent needs an overview of the platform.
+
+## Tools
+
+[Open or copy SKILL.md](/downloads/skills/dreamtune-tools/SKILL.md)
+
+`dreamtune-tools` covers catalog discovery, inspection, request construction,
+execution, refreshing saved runs and interpreting final charges. It requires
+tool permissions and does not assume every connector uses the same input shape.
+
+## Models
+
+[Open or copy SKILL.md](/downloads/skills/dreamtune-models/SKILL.md)
+
+`dreamtune-models` covers explicit model selection, configured limits, text and
+function-calling conversations, returned assistant messages and safe replay.
+It also describes the local model-directed agent workflow.
+
+## Compute
+
+[Open or copy SKILL.md](/downloads/skills/dreamtune-compute/SKILL.md)
+
+`dreamtune-compute` covers availability, local SSH preparation, named launch
+recovery, connection, notebook access, billing and explicit termination.
+It treats private SSH keys and notebook links as sensitive.
+
+## Observability
+
+[Open or copy SKILL.md](/downloads/skills/dreamtune-observability/SKILL.md)
+
+`dreamtune-observability` covers request stages, paginated conversations,
+sessions, users, captured content, media and managed prompt versions.
+Resource ownership and category read permissions remain required.
+
+## Copy a skill
+
+Use the native discovery index linked in [installation](/connect/skills-install)
+to fetch individual Markdown skill files, or extract the ZIP. To install one
+from the CLI:
+
+```sh
+dreamtune skills install dreamtune-observability --directory YOUR_AGENT_SKILLS_DIRECTORY
+```
+
+Skills are instructions, not background daemons. They do not need a separate
+Dreamtune backend, database or provider account on your machine.

@@ -1,0 +1,53 @@
+---
+title: "API overview"
+description: "Production endpoint, authentication, request lifecycle and resource references."
+---
+
+## Connection
+
+| Setting         | Value                                                    |
+| --------------- | -------------------------------------------------------- |
+| Base origin     | https://dreamtune-api.fly.dev                            |
+| Authentication  | Authorization: Bearer YOUR_DREAMTUNE_API_KEY             |
+| Request body    | application/json                                         |
+| Creation replay | Idempotency-Key for billable model/tool/compute creation |
+| Ownership       | Active key's workspace                                   |
+
+Create a key from the [API keys dashboard](https://dreamtunelabs.com/dashboard/api-keys/).
+Select only the required categories. Read scopes permit discovery/status; run
+scopes permit execution. Keep the key outside browser bundles and source control.
+
+## Resource map
+
+| Resource      | Prefix                              | Reference                               |
+| ------------- | ----------------------------------- | --------------------------------------- |
+| Models        | /v1/developer/model-runs            | [Model API](/api/models)                |
+| Tools         | /v1/developer/tool-runs             | [Tool API](/api/tools)                  |
+| Compute       | /v1/developer/compute-jobs          | [Compute API](/api/compute)             |
+| Observability | /v1/developer/observability         | [Observability API](/api/observability) |
+| Prompts       | /v1/developer/observability/prompts | [Prompt API](/api/prompts)              |
+
+The API is not an OpenAI-compatible chat/completions endpoint. Use the documented
+resource contracts or the published [SDK](/sdk). Model streaming and a managed
+hosted agent runtime are not provided by these routes.
+
+## First read-only request
+
+```sh
+curl --fail-with-body \
+  "$DREAMTUNE_API_ORIGIN/v1/developer/model-runs/limits" \
+  -H "Authorization: Bearer $DREAMTUNE_API_KEY"
+```
+
+Set the origin explicitly to the production origin above. This reads limits
+without creating a paid operation.
+
+## Execution lifecycle
+
+Read limits and schemas, save a unique request key, submit once, then inspect the
+returned state. HTTP acceptance is not provider completion. Poll the saved
+resource rather than submitting new work. Preserve its identifier for support,
+billing and trace correlation.
+
+See [conventions](/api/conventions), [errors](/errors) and
+[recovery](/guides/reliability) before building retry logic.

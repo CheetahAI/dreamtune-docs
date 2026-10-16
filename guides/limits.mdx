@@ -1,0 +1,47 @@
+---
+title: "Limits, budgets and concurrency"
+description: "Distinguish input limits, request deadlines, key spending caps and execution admission."
+---
+
+Different limits protect different parts of a request. Increasing a client
+timeout does not increase provider capacity, model context or workspace credit.
+
+| Limit                           | Where to find it                              | What it controls                                      |
+| ------------------------------- | --------------------------------------------- | ----------------------------------------------------- |
+| Model prompt/output limits      | `dreamtune models limits`                     | Accepted conversation and output size                 |
+| Catalog pagination              | Tool query and compute history contracts      | Number of records per read                            |
+| API key cap                     | API key settings                              | Admission after cumulative category spend             |
+| Wallet balance                  | Usage & billing                               | Workspace eligibility to start paid work              |
+| Client request deadline         | `DREAMTUNE_REQUEST_TIMEOUT_MS` or AbortSignal | How long the client waits                             |
+| Local agent operation budget    | `maxOperations`, `maxTotalMinor`              | Whether another workflow operation may start          |
+| Workspace active-operation rule | API admission                                 | Concurrent billable operations across keys/categories |
+
+## One active operation
+
+The workspace shares admission across models, tools and compute. A running or
+unresolved operation can prevent another creation request and return 409.
+Additional keys in that workspace do not bypass this constraint.
+
+For batch processing, manage a bounded queue in your application. Start the next
+operation after the current operation's terminal state is established. Do not
+hammer a conflicting endpoint with parallel retries.
+
+## Spending caps are optional
+
+A blank category cap means wallet-based admission. A supplied cap blocks new
+category work once reached. Neither the cap nor a local workflow budget is a
+guaranteed per-request maximum: a successful upstream result can settle above
+the remaining allowance.
+
+Compute has continuous runtime and termination behavior. Stop it explicitly,
+inspect the job until terminal, and do not equate disconnecting with termination.
+
+## Pagination and dates
+
+Tool catalog `limit` accepts 1–100; compute history requires `limit` of 1–100.
+Observability page numbers accept 1–9999. Trace dates are real `YYYY-MM-DD` UTC
+dates with a range of at most 93 calendar days inclusive.
+
+Use returned opaque cursors unchanged. The tool/model run listing APIs currently
+return bounded recent lists; they do not expose the same cursor contract as
+compute history. See [API conventions](/api/conventions).

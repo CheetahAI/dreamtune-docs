@@ -1,0 +1,67 @@
+---
+title: "Build a web research workflow"
+description: "Run a bounded search-and-summary task through the published CLI and local MCP."
+---
+
+The local dreamtune research command calls a selected tool and model through
+MCP. It needs a key and public documentation, not private backend knowledge.
+
+## Prerequisites and discovery
+
+Install the [CLI](/cli), configure its [environment](/reference/environment),
+enable tool/model read and run scopes, and add wallet credit.
+
+```sh
+dreamtune tools list --q "web search" --limit 10
+dreamtune tools inspect --provider YOUR_PROVIDER --endpoint YOUR_ENDPOINT
+dreamtune models limits
+```
+
+Choose a real endpoint and exact model ID from the live catalog. Replace the
+input below with the envelope required by that endpoint's inspected schema.
+
+## Save research.json
+
+```json
+{
+  "question": "What changed in the latest stable release of the project?",
+  "maxSourceChars": 16000,
+  "maxTotalMinor": "100000",
+  "search": {
+    "provider": "YOUR_PROVIDER",
+    "endpoint": "YOUR_ENDPOINT",
+    "input": { "body": { "query": "YOUR_SEARCH_QUERY" } },
+    "idempotencyKey": "research-search-20261016-001"
+  },
+  "model": {
+    "model": "YOUR_EXACT_MODEL_ID",
+    "maxOutputTokens": 700,
+    "idempotencyKey": "research-summary-20261016-001"
+  }
+}
+```
+
+maxTotalMinor uses USD millionths: 100000 is USD 0.10. It guards between steps;
+an individual operation can exceed the remaining allowance. Select inexpensive
+operations, bound output tokens and use suitable per-key limits.
+
+## Execute and review
+
+```sh
+dreamtune research --file research.json
+```
+
+The workflow checks model limits, inspects the tool, submits the search and reads
+its result. Pending search work returns saved state rather than a fabricated
+answer. Completed source material is passed to the model as untrusted content
+for a cited summary, subject to the workflow's budget guard.
+
+Read the returned stage and IDs. A later failure does not undo earlier billable
+work. Review cited pages yourself; the output is not a guarantee of correctness.
+
+## Recover safely
+
+Keep the file and both keys unchanged. Read saved IDs with tools get and models
+get. Reusing a key with changed input conflicts; using a new key creates new work.
+For ongoing work, set session context and use [observability](/observability).
+To allow multiple model/tool rounds, follow the [agent tutorial](/tutorials/tool-calling-agent).

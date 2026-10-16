@@ -9,9 +9,14 @@
     "dark": "#DC5238"
   },
   "background": {
-    "color": { "light": "#FFFFFF", "dark": "#1B1A18" }
+    "color": {
+      "light": "#FFFFFF",
+      "dark": "#1B1A18"
+    }
   },
-  "appearance": { "default": "light" },
+  "appearance": {
+    "default": "light"
+  },
   "logo": {
     "light": "/images/logo-light.svg",
     "dark": "/images/logo-dark.svg"
@@ -24,30 +29,161 @@
         "groups": [
           {
             "group": "Get started",
-            "pages": ["index", "quickstart", "authentication"]
-          },
-          {
-            "group": "Connect",
-            "pages": ["sdk", "cli", "mcp", "skills"]
+            "pages": [
+              "index",
+              "quickstart",
+              "authentication",
+              "guides/workspaces",
+              "guides/reliability",
+              "guides/production"
+            ]
           },
           {
             "group": "Build",
-            "pages": ["models", "tools", "compute", "observability"]
+            "pages": [
+              "guides/playground",
+              "models",
+              "guides/function-calling",
+              "tools",
+              "compute",
+              "guides/gpu-access",
+              "observability",
+              "guides/sessions",
+              "guides/prompts",
+              "guides/media"
+            ]
           },
           {
             "group": "Manage",
-            "pages": ["billing", "errors"]
+            "pages": [
+              "billing",
+              "guides/payments",
+              "guides/security",
+              "guides/limits",
+              "errors"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "SDK & CLI",
+        "groups": [
+          {
+            "group": "TypeScript",
+            "pages": ["sdk", "reference/environment", "reference/sdk"]
+          },
+          {
+            "group": "Terminal",
+            "pages": [
+              "cli",
+              "reference/cli",
+              "tutorials/research-agent",
+              "tutorials/tool-calling-agent"
+            ]
+          },
+          {
+            "group": "Compatibility",
+            "pages": ["reference/versions"]
+          }
+        ]
+      },
+      {
+        "tab": "Agents & MCP",
+        "groups": [
+          {
+            "group": "Connect",
+            "pages": [
+              "agents/overview",
+              "connect/mcp",
+              "connect/local-mcp",
+              "connect/documentation-mcp",
+              "reference/mcp-tools"
+            ]
+          },
+          {
+            "group": "Coding agents",
+            "pages": [
+              "agents/codex",
+              "agents/claude-code",
+              "agents/cursor",
+              "agents/vscode",
+              "agents/gemini-cli",
+              "agents/windsurf",
+              "agents/cline",
+              "agents/roo-code",
+              "agents/opencode",
+              "agents/continue",
+              "agents/zed",
+              "agents/kiro"
+            ]
+          },
+          {
+            "group": "Skills",
+            "pages": [
+              "skills",
+              "connect/skills-install",
+              "connect/skills-catalog"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "API fundamentals",
+            "pages": ["api/overview", "api/conventions"]
+          },
+          {
+            "group": "Resources",
+            "pages": [
+              "api/models",
+              "api/tools",
+              "api/compute",
+              "api/observability",
+              "api/prompts"
+            ]
           }
         ]
       }
     ]
   },
   "navbar": {
-    "links": [{ "label": "Website", "href": "https://dreamtunelabs.com" }],
+    "links": [
+      {
+        "label": "Home",
+        "href": "https://dreamtunelabs.com"
+      }
+    ],
     "primary": {
       "type": "button",
       "label": "Open dashboard",
       "href": "https://dreamtunelabs.com/dashboard/"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "cursor",
+      "vscode",
+      {
+        "title": "Install Dreamtune skills",
+        "description": "Copy, download or install skills for your agent",
+        "icon": "download",
+        "href": "/connect/skills-install"
+      }
+    ]
+  },
+  "seo": {
+    "indexing": "navigable",
+    "metatags": {
+      "og:site_name": "Dreamtune Documentation",
+      "twitter:card": "summary_large_image",
+      "robots": "index, follow"
     }
   }
 }

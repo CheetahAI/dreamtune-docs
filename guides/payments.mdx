@@ -1,0 +1,58 @@
+---
+title: "Add credit and check payments"
+description: "Fund the correct workspace wallet and reconcile card or crypto payment status."
+---
+
+## Before paying
+
+Sign in and confirm the active workspace. Personal and organization wallets are
+distinct. Credit added to one workspace does not automatically fund another
+workspace's key.
+
+Open [Usage & billing](https://dreamtunelabs.com/dashboard/usage/), enter the
+wallet-credit amount and review the checkout total. The current funding fee and
+any gateway/network amounts are shown by the live checkout. Do not substitute a
+copied rate from an old integration example.
+
+## Card checkout
+
+Choose a supported payment currency and complete the checkout using the
+available gateway flow. The wallet is denominated in USD; the checkout can show
+a local payment amount and its conversion reference. Payment fees do not add
+wallet credit.
+
+Returning from checkout is not the crediting event. Dreamtune credits the
+wallet after server verification of the confirmed payment. Refresh the balance
+and check the corresponding payment record.
+
+## Crypto checkout
+
+Select the intended coin and network carefully. Follow the checkout's exact
+address, amount and expiry. Network confirmation and payment verification can
+take time. Sending an unsupported asset or using a different network is not
+equivalent to completing the requested payment.
+
+Do not send a second payment merely because confirmation is pending.
+Use the saved payment record and Check status.
+
+## Payment history
+
+[Payment history](https://dreamtunelabs.com/dashboard/payments/) lists card and
+crypto top-ups, their payment/credit status, dates, amounts and available
+actions. Use pagination to inspect older records.
+
+Usage deductions are in Logs, not the top-up table. The wallet balance reflects
+settled operations. A failed provider call and a failed top-up are different
+events with different recovery paths.
+
+## Troubleshoot missing credit
+
+1. Confirm that you are viewing the workspace that initiated checkout.
+2. Read the saved payment status and select Check status.
+3. Distinguish pending gateway confirmation from a confirmed credit.
+4. If confirmed payment still has no credit, contact support with the payment
+   reference and approximate UTC time. Never send card security codes, API keys
+   or private wallet keys.
+
+Direct database edits and manually changed browser balances do not prove payment
+verification. For execution spending rules, see [wallet and spending](/billing).

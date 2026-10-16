@@ -1,0 +1,61 @@
+---
+title: "Use Playground"
+description: "Find a supported model or tool, submit an authorized request and inspect text or generated media."
+---
+
+Playground is the dashboard interface for trying supported services with your
+active workspace wallet. Sign in, select the intended workspace, and open
+[Playground](https://dreamtunelabs.com/dashboard/playground/).
+
+## Choose a service
+
+Search by task, model or provider. Tools and Models are separate views with the
+same workspace context. Catalog cards open the selected capability; a listing
+does not guarantee upstream capacity or successful generation.
+
+For a tool, read its description and generated input form. Required fields come
+from the selected endpoint's schema. Model pages show supported modalities and
+the provider's current rate. Do not send confidential data merely to inspect a
+form or catalog entry.
+
+## Submit and inspect
+
+Complete required fields, review the selected service and submit once. Keep the
+saved request ID. The Result panel shows progress, processing, failure or the
+completed output. Refresh checks the saved job; it does not intentionally create
+a second generation.
+
+Text appears as readable output. Supported image results display inline; audio
+and video results use players when the upstream supplies usable media.
+Structured output can be expanded. Browser playback depends on the returned
+content type, codec and URL access policy.
+
+If a media tool returns a nested object or an inaccessible link, inspect the
+structured result and recorded request before resubmitting. Some tools return
+asynchronous jobs that need more time.
+
+## Long-running work
+
+Automatic refresh is bounded. Use Check result to resume checking the same saved
+job after the automatic refresh window. Do not repeatedly click generation to
+make the upstream finish faster: that can create distinct billable operations.
+
+See Logs for completed/failed operations, Runs for aggregate usage, and
+Conversations/Traces for captured content and request stages.
+
+## Creative generation
+
+Supported image/video services have schema-based forms and service-specific
+options. Provide the required prompt, references and generation settings for the
+selected service. Advanced options and presets depend on that capability.
+
+Dashboard generation is authenticated through your signed-in workspace.
+Do not assume a dashboard-only media operation has an equivalent published
+SDK method. The [SDK reference](/reference/sdk) enumerates the exported methods.
+
+## Keep outputs
+
+Download required artifacts while you have authorized access. A provider URL may
+expire. Captured observability media uses authorized expiring access, and does
+not guarantee indefinite preservation of every historical output.
+See [media retention boundaries](/guides/media).

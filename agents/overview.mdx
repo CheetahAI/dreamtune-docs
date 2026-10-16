@@ -1,0 +1,148 @@
+---
+title: "Connect your coding agent"
+description: "Choose a coding client, connect hosted or local MCP, and add Dreamtune skills."
+---
+
+Connect your agent to tools, models, compute and observability using a scoped
+Dreamtune API key. Hosted MCP requires no local Dreamtune server. Local stdio
+lets your client launch the published package and manage local GPU SSH access.
+
+## Choose your client
+
+<CardGroup cols={3}>
+  <Card title="Codex" href="/agents/codex">
+    <img
+      src="/images/agents/codex.svg"
+      alt="Codex official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Claude Code" href="/agents/claude-code">
+    <img
+      src="/images/agents/claude.ico"
+      alt="Claude Code official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Cursor" href="/agents/cursor">
+    <img
+      src="/images/agents/cursor.ico"
+      alt="Cursor official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="VS Code and GitHub Copilot" href="/agents/vscode">
+    <img
+      src="/images/agents/vscode.ico"
+      alt="VS Code and GitHub Copilot official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Gemini CLI" href="/agents/gemini-cli">
+    <img
+      src="/images/agents/gemini-cli.ico"
+      alt="Gemini CLI official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Windsurf / Cascade" href="/agents/windsurf">
+    <img
+      src="/images/agents/windsurf.ico"
+      alt="Windsurf / Cascade official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Cline" href="/agents/cline">
+    <img
+      src="/images/agents/cline.png"
+      alt="Cline official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Roo Code (legacy)" href="/agents/roo-code">
+    <img
+      src="/images/agents/roo-code.png"
+      alt="Roo Code (legacy) official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="OpenCode" href="/agents/opencode">
+    <img
+      src="/images/agents/opencode.svg"
+      alt="OpenCode official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Continue" href="/agents/continue">
+    <img
+      src="/images/agents/continue.png"
+      alt="Continue official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Zed" href="/agents/zed">
+    <img
+      src="/images/agents/zed.png"
+      alt="Zed official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+  <Card title="Kiro" href="/agents/kiro">
+    <img
+      src="/images/agents/kiro.ico"
+      alt="Kiro official logo"
+      width="36"
+      height="36"
+    />
+    Client-specific configuration and verification.
+  </Card>
+</CardGroup>
+
+Client formats differ. Copy the guide for your installed client instead of
+renaming fields from another client's JSON. Roo Code is documented as a legacy
+client because its official repository reports its shutdown.
+
+## Choose the connection
+
+| Need                                                           | Use                                             |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| Execute Dreamtune operations without installing a local server | [Hosted HTTP MCP](/connect/mcp)                 |
+| Local CLI, stdio or automatic SSH key handling                 | [Local MCP](/connect/local-mcp)                 |
+| Search this documentation without executing paid work          | [Documentation MCP](/connect/documentation-mcp) |
+| Give your agent repeatable workflow instructions               | [Dreamtune skills](/connect/skills-install)     |
+| Build an application                                           | [TypeScript SDK](/sdk)                          |
+
+An MCP server exposes tools; your coding agent's selected model decides when to
+request them. The Dreamtune key authorizes execution and billing. Adding MCP
+does not replace your editor's own subscription or model connection.
+
+## Verify before paid work
+
+First discover tools and read model_limits or a catalog. Then inspect a selected
+tool schema. Authorize a small, bounded execution only after confirming the
+workspace, permissions and wallet. Save returned identifiers for recovery.
+
+Review [security](/guides/security), [billing](/billing) and
+[reliability](/guides/reliability) before granting broader access.

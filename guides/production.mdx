@@ -1,0 +1,60 @@
+---
+title: "Ship your integration"
+description: "Prepare credentials, request recovery, cost controls and observability for a production application."
+---
+
+## Separate environments
+
+Use production keys with the production origin and development keys only with
+their development environment. Set every required value explicitly.
+Do not substitute a development endpoint or key when production fails.
+
+Keep credentials in server-side secret settings. Frontend clients should call
+your authenticated application server, which controls the allowed Dreamtune
+operations. A browser bundle must not contain your workspace key.
+
+## Define an operation boundary
+
+Persist a unique request key before each intended paid operation. Save the
+request input, returned Dreamtune identifier and final state in your application.
+Do not create a new key for retries of the same uncertain submission.
+
+Apply a deadline to waiting, while keeping a recovery path for accepted work.
+Network failure is not proof of cancellation. Check saved status before deciding
+whether another operation is necessary.
+
+## Bound work and access
+
+Select only required key categories and configure optional cumulative caps.
+Limit output tokens, local agent rounds, retrieved source sizes and GPU lifetime.
+A category cap is not a guaranteed hard price ceiling for one call.
+
+One active billable operation per workspace can produce a conflict. Coordinate
+your application's submissions instead of repeatedly retrying conflicts.
+Do not run load tests against paid production endpoints without a separate,
+explicitly bounded plan.
+
+## Instrument the user journey
+
+Choose stable application session and end-user labels that avoid unnecessary
+personal information. Capture consent and retention obligations in your product.
+Make feedback collection explicit rather than assuming an evaluator knows the
+user's opinion.
+
+Correlate your application operation with the Dreamtune request ID. Use
+[observability](/observability) to distinguish admission, provider work,
+settlement and delivery time. Missing metrics are unavailable, not zero.
+
+## Release and recovery
+
+Validate happy paths, bad input, missing scopes, revoked keys, isolated
+workspaces, idempotent replay, pending/failed work and insufficient credit.
+Verify text and media output in your actual user interface.
+
+Monitor saved outcomes and wallet behavior after release. Have a human recovery
+path for ambiguous paid work. Stop GPUs explicitly and verify termination.
+Keep private notebook URLs and captured customer content out of public logs.
+
+Review [security](/guides/security), [limits](/guides/limits) and
+[reliability](/guides/reliability) before launch. These integration practices are
+not a certification or uptime guarantee.

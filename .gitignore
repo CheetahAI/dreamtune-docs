@@ -1,5 +1,6 @@
 node_modules/
-.mintlify/
+.mintlify/*
+!.mintlify/skills/
 .env
 .env.*
 *.log

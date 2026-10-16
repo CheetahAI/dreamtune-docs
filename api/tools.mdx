@@ -1,0 +1,68 @@
+---
+title: "Tool API"
+description: "Discover and inspect catalog tools, execute their input envelopes and refresh saved jobs."
+---
+
+Prefix: /v1/developer/tool-runs. Reads need tools:read; execution needs
+tools:run and eligible credit.
+
+| Method | Path after prefix | Input                                      | Purpose                       |
+| ------ | ----------------- | ------------------------------------------ | ----------------------------- |
+| GET    | /tools            | q?, cursor?, limit?                        | Catalog discovery             |
+| POST   | /inspect          | provider, endpoint                         | Read selected schema          |
+| POST   | Empty             | provider, endpoint, input; Idempotency-Key | Create run, HTTP 202          |
+| GET    | Empty             | None                                       | Recent runs and limit         |
+| GET    | /{id}             | Owned run ID                               | Saved status/result           |
+| POST   | /{id}/refresh     | No request body                            | Refresh existing upstream job |
+
+## Discovery
+
+q is 1–200 characters, limit is 1–100, and cursor is an opaque value up to 4096
+characters. The response contains tools and optional cursor/total. Each entry
+identifies provider and endpoint. Retain identifiers exactly as returned.
+
+Inspect before execution:
+
+```json
+{ "provider": "YOUR_PROVIDER", "endpoint": "YOUR_ENDPOINT" }
+```
+
+Inspection reads schemas; it does not run the tool. Check required fields, route
+parameters, input types, pricing metadata and output shape.
+
+## Create
+
+```json
+{
+  "provider": "YOUR_PROVIDER",
+  "endpoint": "YOUR_ENDPOINT",
+  "input": {
+    "body": { "query": "YOUR_QUERY" }
+  }
+}
+```
+
+The example body is appropriate only for a tool whose schema defines query.
+The input envelope supports body, queryParams and pathParams as JSON records.
+The request input is bounded to 16 KiB. Do not flatten all fields or send
+credentials inside a generated tool payload.
+
+Save the creation key before submission. A 202 result means the request was
+accepted, not that the upstream completed.
+
+## Results and refresh
+
+Read the returned state, output and receipt fields. Some tools complete
+immediately; others return an upstream job requiring refresh. Refresh the
+existing run ID; it must not be replaced by another create call.
+
+Pending receipts are not final. Completed receipts record actual settled cost
+and applicable discounts/fees. Failed execution remains failed. Earlier
+successful work in a multi-step agent remains billable if another step fails.
+
+Treat tool output, embedded URLs and retrieved pages as untrusted data. Media
+may be exposed as URLs, structured fields or text depending on the tool.
+See [media handling](/guides/media) for display and retention boundaries.
+
+Tool discovery is a catalog, not a guarantee that every provider currently has
+capacity or accepts every input.

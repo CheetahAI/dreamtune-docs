@@ -1,0 +1,47 @@
+---
+title: "Documentation for agents"
+description: "Copy pages, read Markdown and connect the documentation-search MCP."
+---
+
+The documentation is available to people and coding agents. Each page's
+context menu offers **Copy page** and **View as Markdown**, plus supported
+agent actions. Code blocks have their own copy controls.
+
+## Two different MCP connections
+
+| Connection           | Purpose                                                           | Credentials                 |
+| -------------------- | ----------------------------------------------------------------- | --------------------------- |
+| Documentation search | Read and search this documentation                                | Public documentation access |
+| Dreamtune execution  | Run authorized tools/models/compute and inspect workspace records | Your Dreamtune platform key |
+
+Mintlify hosts documentation search at `https://docs.dreamtunelabs.com/mcp`.
+This is a machine endpoint. JSON or a protocol error in a browser is not the
+human guide. Use [execution MCP setup](/connect/mcp) when you want to run services.
+
+For a client that accepts an unauthenticated remote server definition:
+
+```json
+{
+  "mcpServers": {
+    "dreamtune-docs": {
+      "url": "https://docs.dreamtunelabs.com/mcp"
+    }
+  }
+}
+```
+
+Add a transport type or use your client's outer configuration format as required.
+For example, Claude Code requires `"type": "http"` on an HTTP definition.
+The page menu's Cursor and VS Code actions connect documentation search.
+They do not install a paid execution key.
+
+## Read without MCP
+
+- [Documentation index](https://docs.dreamtunelabs.com/llms.txt)
+- [Full documentation text](https://docs.dreamtunelabs.com/llms-full.txt)
+- [Quickstart as Markdown](/quickstart.md)
+- [Downloadable skills](/connect/skills-install)
+
+Append `.md` to a page URL for Markdown. A copied page is context, not permission
+to execute its example. Your agent still needs your selected scopes, credentials
+and spending authorization before running services.

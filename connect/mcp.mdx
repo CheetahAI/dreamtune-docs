@@ -5,6 +5,11 @@ description: "Give your agent scoped access through hosted HTTP or local stdio M
 
 ## Hosted connection
 
+This is the human setup guide. The server address below is a machine endpoint:
+opening it in a browser may return JSON or a protocol error. Add it in your
+agent's MCP settings instead. For client-specific instructions, use the
+[coding-agent directory](/agents/overview).
+
 Use an MCP client that supports Streamable HTTP and custom request headers:
 
 | Setting      | Value                               |
@@ -19,6 +24,9 @@ varies by client. Hosted MCP uses your key directly; it does not provide browser
 OAuth login. Choose local MCP if your client cannot supply the required header.
 
 ## Local connection
+
+See [the complete local setup](/connect/local-mcp) for environment configuration,
+Windows command resolution, startup checks and GPU key management.
 
 Install the CLI:
 

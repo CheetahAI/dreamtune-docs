@@ -1,0 +1,58 @@
+---
+title: "Cline"
+description: "Connect Cline to Dreamtune MCP and install scoped workflow skills."
+---
+
+<img
+  src="/images/agents/cline.png"
+  alt="Cline official logo"
+  width="48"
+  height="48"
+/>
+
+## Before you connect
+
+Create a Dreamtune workspace API key with only the permissions you need.
+Hosted HTTP setup needs no Dreamtune package installation. Local stdio setup
+requires Node.js 22.20 or later and the published CLI.
+
+## Configure
+
+Merge this server entry into the configuration opened from Cline's MCP Servers settings. Preserve any other servers or settings.
+
+```json
+{
+  "mcpServers": {
+    "dreamtune": {
+      "type": "streamableHttp",
+      "url": "https://mcp.dreamtunelabs.com/mcp",
+      "headers": {
+        "X-Dreamtune-API-Key": "YOUR_DREAMTUNE_KEY"
+      }
+    }
+  }
+}
+```
+
+Replace the key in private settings. Explicit streamableHttp selects Streamable HTTP; omitting the type can select legacy SSE. Do not enable blanket auto-approval for paid operations.
+
+## Verify the connection
+
+Restart the client after changing settings or its environment. Open its MCP
+server/tool status view and check that Dreamtune tools are listed. Ask it:
+
+> Use Dreamtune to read model request limits. Do not execute a model, tool or GPU.
+
+Confirm model_limits returns limits before authorizing paid work. Then inspect a
+catalog schema and use one explicitly approved operation. Keep client approval
+controls enabled. Never put the key in a chat message, URL or repository.
+
+## Add workflow instructions
+
+Install the [Dreamtune skills](/connect/skills-install) into the skills directory
+supported by your client, or copy the platform skill into a user instruction
+workflow. A skill guides the agent; MCP provides execution. Neither grants extra
+key permissions. See [troubleshooting](/errors) for 401, missing scopes, timeouts
+and key/environment problems.
+
+Configuration verified against [the official client documentation](https://docs.cline.bot/mcp/mcp-overview).

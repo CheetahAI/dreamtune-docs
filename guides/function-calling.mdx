@@ -1,0 +1,73 @@
+---
+title: "Model function calling"
+description: "Define allowed functions, execute validated calls and return their results to the model."
+---
+
+Function calling lets a model request a named operation. Your application or
+Dreamtune's local agent decides which configured binding can execute it. A
+function definition does not grant the model unrestricted tool access.
+
+## Before you begin
+
+- Choose a catalog model that supports function calling.
+- Give the key model access and access to the tools you will execute.
+- Inspect each tool's actual input schema.
+- Persist a distinct operation key for every intended model and tool submission.
+
+## Define a function
+
+Include `tools` on the model request. A definition uses this shape:
+
+```json
+{
+  "type": "function",
+  "function": {
+    "name": "search_documents",
+    "description": "Search the authorized document collection.",
+    "parameters": {
+      "type": "object",
+      "properties": { "query": { "type": "string" } },
+      "required": ["query"],
+      "additionalProperties": false
+    }
+  }
+}
+```
+
+This defines a function contract. It is not itself a catalog connector. Map its
+arguments to an explicitly authorized tool or your own application function.
+
+`tool_choice` accepts `auto`, `none`, `required`, or a named function selection.
+`parallel_tool_calls` is optional. These options require `tools`; a named
+selection must refer to one of the supplied definitions.
+
+## Complete the conversation
+
+1. Read `run.message.tool_calls` when the model requests functions.
+2. Preserve the complete assistant message, including `reasoning_details` if
+   present. A tool-only assistant message can have null content.
+3. Validate each function name and parsed arguments against your allowed bindings.
+4. Execute authorized operations and append a `role: "tool"` message for each
+   returned call ID.
+5. Submit the next model request with the accumulated messages and the same tool
+   definitions, using a new saved model-operation key.
+
+```json
+{
+  "role": "tool",
+  "tool_call_id": "THE_RETURNED_CALL_ID",
+  "content": "THE_SERIALIZED_TOOL_RESULT"
+}
+```
+
+Every requested call needs exactly one matching result before the next ordinary
+conversation message. Do not invent call IDs, discard reasoning fields or append
+unrelated tool results. Text-only conversations end with a user turn; a function
+round can end with its complete set of tool results.
+
+## Bound the loop
+
+Limit operation count, output size, elapsed time and spend in your application.
+Treat fetched content as data rather than instructions. A completed model turn
+and each successful tool operation settle independently. For a ready local loop,
+see [the tool-calling agent tutorial](/tutorials/tool-calling-agent).

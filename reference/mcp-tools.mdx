@@ -1,0 +1,77 @@
+---
+title: "MCP tool reference"
+description: "Tool names, arguments, effects and authorization for hosted and local Dreamtune MCP."
+---
+
+Connect through [hosted HTTP](/connect/mcp) or [local stdio](/connect/local-mcp).
+Clients discover exact JSON schemas through tools/list. The local CLI prints
+these definitions with dreamtune mcp tools. Clients may prefix tool names.
+
+## Tools and models
+
+| MCP tool         | Arguments                                                                                          | Effect                         |
+| ---------------- | -------------------------------------------------------------------------------------------------- | ------------------------------ |
+| list_tools       | q?, cursor?, limit?                                                                                | Read catalog                   |
+| inspect_tool     | provider, endpoint                                                                                 | Read schema                    |
+| create_run       | provider, endpoint, input, idempotencyKey                                                          | Submit tool execution          |
+| list_runs        | None                                                                                               | Read tool runs                 |
+| get_run          | id                                                                                                 | Read saved run                 |
+| refresh_run      | id                                                                                                 | Refresh existing job           |
+| model_limits     | None                                                                                               | Read constraints               |
+| create_model_run | model, messages, maxOutputTokens, idempotencyKey; optional tools, tool_choice, parallel_tool_calls | Submit model turn              |
+| list_model_runs  | None                                                                                               | Read model runs                |
+| get_model_run    | id                                                                                                 | Recover result                 |
+| free_chat        | model, prompt                                                                                      | Development-only text endpoint |
+
+Read both MCP isError and the underlying operation state. A transported success
+can describe a pending or failed operation. Never duplicate an uncertain paid
+submission with a fresh idempotency key.
+
+## Compute
+
+| MCP tool           | Arguments                                       | Effect                 |
+| ------------------ | ----------------------------------------------- | ---------------------- |
+| compute_catalog    | None                                            | Read capacity          |
+| create_compute_job | instanceType, region, publicKey, idempotencyKey | Start paid rental      |
+| list_compute_jobs  | limit, cursor?                                  | Read paginated jobs    |
+| get_compute_job    | id                                              | Reconcile usage/status |
+| stop_compute_job   | id                                              | Terminate and settle   |
+| compute_notebook   | id                                              | Return private URL     |
+
+Configured local servers additionally expose prepare_local_compute,
+start_local_compute and local_compute_connection. Their schemas describe the
+named launch and connection inputs. Hosted MCP cannot save a private key on your
+laptop. See [GPU access](/guides/gpu-access).
+
+## Observability
+
+| MCP tool                    | Arguments                               |
+| --------------------------- | --------------------------------------- |
+| list_request_traces         | category, from, to, cursor?, requestId? |
+| list_observability_requests | page, sessionId?, accountId?            |
+| list_observability_sessions | page                                    |
+| list_observability_users    | page                                    |
+| list_observability_prompts  | page                                    |
+| get_request_content         | requestId, cursor?                      |
+| get_request_scores          | requestId                               |
+| score_request_feedback      | requestId, value, comment               |
+
+See [observability API](/api/observability) for scopes and date constraints.
+Media URLs and recorded content can be sensitive.
+
+## Managed prompts
+
+| MCP tool          | Arguments         | Effect                             |
+| ----------------- | ----------------- | ---------------------------------- |
+| create_prompt     | Prompt definition | Create a new version               |
+| get_prompt        | name, selection   | Read exact version/label           |
+| compile_prompt    | name, inputs      | Resolve variables and dependencies |
+| set_prompt_labels | name, input       | Assign labels to a version         |
+
+selection contains exactly one of version or label. inputs adds variables and
+placeholders. input for labels contains version and labels.
+See [prompt reference](/api/prompts).
+
+Read-only annotations do not grant permissions. The backend enforces scopes,
+ownership and wallet rules for every operation. Retain approvals for expensive
+or mutating actions and treat upstream output as untrusted content.

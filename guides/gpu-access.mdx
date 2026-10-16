@@ -1,0 +1,63 @@
+---
+title: "GPU SSH keys and reconnection"
+description: "Prepare private local access, reconnect to rentals and use hosted MCP safely."
+---
+
+The website and local CLI can prepare SSH access for a GPU. The HTTP SDK and
+hosted MCP accept an explicit public key. Never send an SSH private key in an
+API payload, chat message or support log.
+
+## Local CLI state
+
+Configure `DREAMTUNE_COMPUTE_STATE_DIRECTORY` as an absolute private directory.
+`compute start` creates an Ed25519 key pair and saves its launch reference before
+submitting. The same named launch and selection reuse this saved identity.
+
+Do not delete that directory while you still need access to its rentals. The
+CLI reports corrupt or missing state rather than silently replacing the key.
+The platform API key is not stored in these compute state files.
+
+## Prepare before hosted MCP
+
+```sh
+dreamtune compute prepare --name training-job --type YOUR_TYPE --region YOUR_REGION
+```
+
+Preparation creates local access without renting a GPU. Send only its public
+launch fields (`instanceType`, `region`, `publicKey`, `idempotencyKey`) to the
+hosted MCP tool `create_compute_job`.
+
+Once a job ID has been returned and the job is ready:
+
+```sh
+dreamtune compute ssh YOUR_JOB_ID --name training-job
+```
+
+The CLI verifies the association with that launch and its saved key. Set
+`DREAMTUNE_SSH_USER` for the selected image. An Ubuntu example uses `ubuntu`;
+other images can require a different account.
+
+## Inspect before connecting
+
+```sh
+dreamtune compute get YOUR_JOB_ID
+dreamtune compute connection YOUR_JOB_ID
+```
+
+The connection command returns connection arguments without starting a shell.
+Host-key checking is preserved. Investigate a changed-host warning before
+accepting a new key; do not disable verification merely to make SSH connect.
+
+Notebook URLs grant access to the machine. Retrieve them only when needed and
+avoid storing them in public logs. Disconnecting SSH or closing a notebook does
+not stop runtime billing.
+
+## Finish a rental
+
+```sh
+dreamtune compute stop YOUR_JOB_ID
+dreamtune compute get YOUR_JOB_ID
+```
+
+Confirm a terminal job state. Preserve relevant output before stopping;
+persistent storage is not provided by the current rental contract.

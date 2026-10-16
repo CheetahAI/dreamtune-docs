@@ -1,0 +1,69 @@
+---
+title: "API conventions"
+description: "HTTP status, idempotency, identifiers, pagination, money and operation states."
+---
+
+## Authentication and scopes
+
+Send Authorization: Bearer on API requests. The hosted execution MCP instead
+uses X-Dreamtune-API-Key. Neither key is a Clerk dashboard session. A session
+label or end-user ID annotates an execution; it cannot select another tenant.
+
+Use models:read/models:run, tools:read/tools:run and compute:read/compute:run
+as selected in your key. Missing access fails explicitly.
+
+## Creation and replay
+
+Billable creation requires Idempotency-Key with 16–128 characters using ASCII
+letters, numbers, underscores or hyphens. Persist it before submission.
+Identical replay recovers the same operation. Changed input or attribution with
+the same key conflicts. A fresh key means a new operation and possible charge.
+
+A timeout leaves the execution outcome uncertain. Do not automatically repeat
+paid execution with another key. Read the saved operation, then reconcile its
+status. There is no automatic provider, model or credential substitution.
+
+## HTTP versus execution state
+
+| HTTP outcome | Interpretation                                                                |
+| ------------ | ----------------------------------------------------------------------------- |
+| 200          | Read succeeded, or model submission returned a terminal result; inspect state |
+| 201          | Prompt version created                                                        |
+| 202          | Accepted/pending; feedback and tool submission also use this status           |
+| 400          | Invalid input                                                                 |
+| 401 / 403    | Invalid identity or insufficient access                                       |
+| 402          | Wallet or key spending restriction                                            |
+| 404          | Resource unavailable to this workspace                                        |
+| 409          | Conflicting replay or active-operation constraint                             |
+| 429          | Rate limited                                                                  |
+| 5xx          | Service/upstream failure; outcome may require reconciliation                  |
+
+Do not treat an HTTP 200 containing state failed as successful generation.
+See [errors](/errors) for recovery by symptom.
+
+## Money and receipts
+
+Currency is USD and scale is 6 for execution receipts. Amounts are decimal
+integer strings, measured in millionths of a dollar. For example, "250000"
+means USD 0.25. Use BigInt rather than floating-point arithmetic.
+
+Final receipts can contain cost, discountAmount, fee and total. Use the recorded
+receipt, including any discount, rather than recomputing from an advertised
+price. Pending chargedAmount of zero is not proof that work is free.
+
+Key category caps are cumulative optional limits. Blank means wallet-funded
+execution, not unlimited free usage. Admission is checked before work; final
+successful cost can cross the remaining allowance. See [billing](/billing).
+
+## Identifiers and pagination
+
+Model, tool and compute IDs use 64 lowercase hexadecimal characters. Treat
+identifiers as opaque ownership-bound references, not credentials.
+
+Pagination differs by endpoint: tool discovery uses an opaque cursor; compute
+requires a limit and uses a job cursor; observability lists use page numbers,
+while traces and captured content use cursors. Follow each returned next cursor
+unchanged. Do not invent offsets or assume every list has the same envelope.
+
+Dates use YYYY-MM-DD for trace filters; timestamps use the returned UTC time.
+End-user and session labels must meet [context limits](/reference/environment).

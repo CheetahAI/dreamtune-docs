@@ -1,0 +1,43 @@
+---
+title: "Versions and compatibility"
+description: "Published package requirements, supported interfaces and upgrade checks."
+---
+
+These docs describe the published `@dreamtune/sdk` 0.1.1 contract. The package
+contains the TypeScript SDK, `dreamtune` CLI, local MCP executable and five
+bundled skills. Hosted execution MCP is already deployed.
+
+## Runtime
+
+Use Node.js 22.20 or later. Local GPU access additionally requires OpenSSH.
+The HTTP SDK is an ESM package; import it with standard ES module syntax.
+
+```sh
+npm view @dreamtune/sdk version
+dreamtune --version
+```
+
+The first command checks the published release; the second checks your installed
+CLI. Use your application's lockfile to review and pin dependency changes.
+Review the public types and release README before upgrading an integration.
+
+## Package entry points
+
+| Entry point           | Purpose                                    |
+| --------------------- | ------------------------------------------ |
+| `@dreamtune/sdk`      | HTTP client and public operation types     |
+| `@dreamtune/sdk/node` | Local compute-access client                |
+| `@dreamtune/sdk/mcp`  | MCP registration exports                   |
+| `dreamtune`           | CLI, local workflows and stdio MCP command |
+| `dreamtune-mcp`       | Direct stdio MCP executable                |
+
+## Scope of the interfaces
+
+The current model API is non-streaming and uses Dreamtune's run contract.
+An OpenAI-compatible chat endpoint and hosted managed-agent deployment are
+not part of this package. Website checkout and key management remain dashboard
+flows. The legacy free-chat interface is development-only.
+
+Client configuration changes over time. Agent setup pages link to the official
+client documentation checked for this publication. Matching the documented
+configuration is distinct from installing and testing every editor locally.

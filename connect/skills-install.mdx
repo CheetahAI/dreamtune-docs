@@ -1,0 +1,60 @@
+---
+title: "Install or download skills"
+description: "Add the published Dreamtune skills to your coding agent or copy them manually."
+---
+
+Skills teach an agent the supported workflows. They contain no credentials and
+do not execute services simply because they are installed.
+
+## Install from the published package
+
+```sh
+npm install --global @dreamtune/sdk
+dreamtune skills list
+dreamtune skills install all --directory YOUR_AGENT_SKILLS_DIRECTORY
+```
+
+Replace the directory with the one your agent loads. Examples include a
+project's `.agents/skills` for compatible clients, `.claude/skills` for Claude
+Code, or the skills location documented by your editor. Your client's current
+documentation determines its search paths; do not assume every editor uses the
+same global folder.
+
+Install a single capability when that is all you need:
+
+```sh
+dreamtune skills install dreamtune-models --directory YOUR_AGENT_SKILLS_DIRECTORY
+```
+
+The installer refuses to overwrite an existing named skill. Review an existing
+installation before replacing it. Restart or reload the agent's skills as its
+documentation requires.
+
+## Download an archive
+
+[Download all five Dreamtune skills](/downloads/dreamtune-skills.zip).
+Extract each named directory into your agent's skills directory, preserving
+`<skill-name>/SKILL.md`. The archive contains the published skill content and license.
+
+For copy/paste installation, open the [skills catalog](/connect/skills-catalog),
+choose a skill, and save its Markdown as `SKILL.md` inside a matching directory.
+Do not paste a skill into a credential field or a JSON MCP configuration.
+
+## Discover skills from the docs
+
+Mintlify serves the root [skill.md](/skill.md) and native discovery endpoints:
+
+```text
+https://docs.dreamtunelabs.com/.well-known/agent-skills/index.json
+https://docs.dreamtunelabs.com/.well-known/skills/index.json
+```
+
+Clients supporting website skill discovery can use those endpoints. If multiple
+skills are served, `/skill.md` can redirect to the discovery index. The package
+installer and ZIP remain direct ways to obtain the same workflow instructions.
+
+## Configure execution separately
+
+Install [local or hosted MCP](/connect/mcp), or configure the [CLI](/cli).
+A skill does not select an API key, add wallet credit or bypass approval prompts.
+Ask your agent to discover tools first, and authorize paid execution explicitly.

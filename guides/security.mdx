@@ -1,0 +1,51 @@
+---
+title: "Secure your integration"
+description: "Protect workspace keys, restrict agent operations and handle captured content."
+---
+
+## Keep keys server-side
+
+Store the platform key in your application's secret manager or your agent
+client's protected credential settings. Do not place it in browser JavaScript,
+public repositories, URLs, screenshots or tool arguments.
+
+Use a dedicated named key per application, grant the required read/run categories
+and set optional spending caps appropriate to the workload. Revoke exposed or
+unused keys in the dashboard. Production and development keys are separate.
+
+## Agent permissions
+
+A skill teaches an agent a workflow; it does not grant authorization. MCP tool
+annotations describe intended behavior, while the backend still checks scopes,
+ownership, wallet admission and saved request state.
+
+Keep your editor's approval prompts for paid or mutating operations. Do not
+automatically approve every tool merely because a sample configuration supports
+an allow-all setting. Explicitly bind model function names to approved tools.
+
+## Untrusted results
+
+Search pages, generated files and tool outputs can contain misleading content
+or prompt injection. Treat them as task data. They must not change your agent's
+credential access, spending authorization or workspace selection.
+
+## Transport and local files
+
+Use the HTTPS API and MCP origins. Local stdio requires a trusted executable and
+an explicit environment. Do not disable certificate verification or SSH host-key
+checks to bypass an error. Keep the compute state directory private.
+
+## Captured conversations
+
+Prompts, replies and generated artifacts can contain sensitive user information.
+Apply your application's consent, disclosure and retention obligations before
+submitting content. Use opaque end-user/session labels where possible and keep
+signed media URLs private.
+
+Workspace isolation is enforced by Dreamtune's resource checks. If your own app
+serves multiple end users under one key, your app must still authorize which of
+its users can view each result. An observability label is not an access token.
+
+See the published [Privacy Policy](https://dreamtunelabs.com/privacy/) and
+[Terms](https://dreamtunelabs.com/terms/) for the platform's applicable policies.
+This guide does not promise an unlisted certification, SLA or enterprise SSO feature.

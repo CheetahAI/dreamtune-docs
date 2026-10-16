@@ -1,0 +1,62 @@
+---
+title: "Sessions and end users"
+description: "Correlate conversation turns and inspect workspace-owned histories."
+---
+
+A session groups related requests. An end-user label attributes them inside your
+workspace. Neither value changes authorization or grants access to another tenant.
+
+## Choose identifiers
+
+Use a stable session identifier for a conversation and a stable end-user identifier
+for its participant. Start a new session for a distinct conversation. Prefer
+opaque application IDs over email addresses or other personal information.
+
+| Input       | Accepted form                                                    |
+| ----------- | ---------------------------------------------------------------- |
+| `sessionId` | 1–128 letters, digits, underscores or hyphens                    |
+| `endUserId` | 1–128 letters, digits, underscores, periods, at signs or hyphens |
+
+## Attach SDK context
+
+```typescript
+const client = new DreamtuneClient({
+  apiKey,
+  baseUrl,
+  observability: {
+    sessionId: "conversation-42",
+    endUserId: "customer-17",
+  },
+});
+```
+
+All operations submitted with this client carry the selected context. Create a
+client with the appropriate context for each conversation boundary rather than
+reusing one user's labels for unrelated users.
+
+For CLI/local MCP, set `DREAMTUNE_SESSION_ID` and `DREAMTUNE_END_USER_ID` on the
+process before submitting work. Hosted clients can supply the corresponding
+context headers only where their configuration supports them.
+
+## Retrieve history
+
+```sh
+dreamtune observability sessions --page 1
+dreamtune observability users --page 1
+dreamtune observability list --session RETURNED_SESSION_ID --page 1
+```
+
+Use the opaque IDs returned by the listing APIs when filtering history. The
+submitted label and the returned internal record ID are different interfaces.
+Follow page/cursor fields until the needed history has been collected.
+
+`content(requestId)` reads captured input/output and media references. It can
+return only the data recorded under the selected capture/retention settings.
+Missing content is not evidence that a request did not occur.
+
+## Replays and isolation
+
+Keep observability context unchanged when recovering an idempotent operation.
+Conflicting context is rejected. All reads remain workspace-scoped and require
+the category's applicable read permissions. Application user labels alone are
+not a sufficient authorization boundary for your own end-user UI.

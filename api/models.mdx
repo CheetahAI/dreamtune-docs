@@ -1,0 +1,66 @@
+---
+title: "Model API"
+description: "Submit model conversations and function calls, recover requests and read usage receipts."
+---
+
+Prefix: /v1/developer/model-runs. Reads need models:read; creation needs
+models:run and eligible wallet/key credit.
+
+| Method | Path after prefix | Input                              | Result                                                     |
+| ------ | ----------------- | ---------------------------------- | ---------------------------------------------------------- |
+| GET    | /limits           | None                               | maxPromptChars, maxOutputTokens, configured feeBasisPoints |
+| POST   | Empty             | JSON below, Idempotency-Key header | Saved run; 200 terminal or 202 pending                     |
+| GET    | Empty             | None                               | Owned runs envelope                                        |
+| GET    | /{id}             | Owned run ID                       | Saved/reconciled run                                       |
+
+## Create a conversation turn
+
+```json
+{
+  "model": "YOUR_EXACT_MODEL_ID",
+  "messages": [
+    { "role": "system", "content": "Answer concisely." },
+    { "role": "user", "content": "Explain idempotency in one sentence." }
+  ],
+  "maxOutputTokens": 300
+}
+```
+
+```sh
+curl --fail-with-body \
+  "$DREAMTUNE_API_ORIGIN/v1/developer/model-runs" \
+  -H "Authorization: Bearer $DREAMTUNE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Idempotency-Key: $DREAMTUNE_REQUEST_ID" \
+  --data-binary @request.json
+```
+
+The model must be an exact supported identifier, not a display name. Read limits
+before choosing conversation/output bounds. Required maxOutputTokens must be a
+positive integer within the deployment limit.
+
+## Function calling
+
+Optional fields are tools, tool_choice and parallel_tool_calls. tools uses
+function definitions with a name, description and JSON object parameters.
+tool_choice accepts auto, none, required or a named function selector.
+
+Assistant messages may include content, tool_calls and reasoning_details.
+Tool messages include tool_call_id and content. Return all results for the
+preceding calls before continuing ordinary conversation; call identifiers and
+function names must be consistent. The final input is a user message or a
+completed set of tool results. See [the full flow](/guides/function-calling).
+
+## Read the result
+
+A run contains id, model, createdAt, state, currency and scale. Completed runs can
+include text, message, finishReason, usage.promptTokens, usage.completionTokens
+and final money fields. Missing upstream metrics must not be invented.
+
+States include reserved, queued, submitting, received, completed, failed and
+needs_reconciliation. Pending work must be recovered through GET by saved ID.
+A failed run can be returned successfully at the HTTP layer; inspect state and
+error. Never infer that a free catalog listing guarantees available capacity.
+
+Session, end-user and prompt attribution can be attached by the SDK/CLI context.
+See [sessions](/guides/sessions) and [managed prompts](/guides/prompts).

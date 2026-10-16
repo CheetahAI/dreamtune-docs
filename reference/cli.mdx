@@ -1,0 +1,93 @@
+---
+title: "CLI command reference"
+description: "Commands, required arguments, request files and recovery for the Dreamtune CLI."
+---
+
+## Installation
+
+```sh
+npm install --global @dreamtune/sdk
+dreamtune --help
+```
+
+Configure the three required [environment variables](/reference/environment).
+Commands print JSON. Save input files and idempotency keys. Use --help on each
+command for your installed package's exact options.
+
+## Tools
+
+| Command after dreamtune | Input                           | Purpose                 |
+| ----------------------- | ------------------------------- | ----------------------- |
+| tools list              | Optional --q, --cursor, --limit | Discover                |
+| tools inspect           | --provider, --endpoint          | Read schema             |
+| tools run               | --file, --idempotency-key       | Execute input envelope  |
+| tools runs              | —                               | List recent runs        |
+| tools get               | Run ID                          | Read saved run          |
+| tools refresh           | Run ID                          | Refresh upstream status |
+
+The run file contains provider, endpoint and input. input is the inspected body/queryParams/pathParams envelope.
+
+## Models
+
+| Command after dreamtune | Input                     | Purpose                                                              |
+| ----------------------- | ------------------------- | -------------------------------------------------------------------- |
+| models limits           | —                         | Read request limits                                                  |
+| models run              | --file, --idempotency-key | Submit model/messages/maxOutputTokens and optional function settings |
+| models runs             | —                         | List runs                                                            |
+| models get              | Run ID                    | Recover state/output                                                 |
+| models free-chat        | --file                    | Separate development-only model/prompt API                           |
+
+Use model runs in production. A timeout can follow successful execution; read
+saved state before creating another request.
+
+## Compute
+
+| Command after dreamtune | Input                              | Purpose                           |
+| ----------------------- | ---------------------------------- | --------------------------------- |
+| compute catalog         | —                                  | Read availability                 |
+| compute prepare         | --name, --type, --region           | Prepare SSH access without rental |
+| compute start           | --name, --type, --region           | Start/resume named launch         |
+| compute jobs            | --limit, optional --cursor         | Paginated history                 |
+| compute get             | Job ID                             | Read status/usage                 |
+| compute connection      | Job ID, optional --name            | Read SSH arguments                |
+| compute ssh             | Job ID, optional --name, --command | Open SSH or run selected command  |
+| compute notebook        | Job ID                             | Read private notebook URL         |
+| compute stop            | Job ID                             | Terminate and settle              |
+
+Configure local state and SSH-user settings before local access. Closing the
+terminal does not stop a rental. See [GPU access](/guides/gpu-access).
+
+## Observability
+
+| Command after dreamtune                  | Input                                                      |
+| ---------------------------------------- | ---------------------------------------------------------- |
+| observability traces                     | --file with category/from/to and optional cursor/requestId |
+| observability list                       | --page, optional --session, --account                      |
+| observability sessions / users / prompts | --page                                                     |
+| observability content                    | Request ID, optional --cursor                              |
+| observability scores                     | Request ID                                                 |
+| observability feedback                   | Request ID, --value 0 or 1, --comment                      |
+| observability prompt-create              | --file with definition                                     |
+| observability prompt-get                 | Name, --file with exact version or label                   |
+| observability prompt-compile             | Name, --file with selector/variables/placeholders          |
+| observability prompt-labels              | Name, --file with version/labels                           |
+
+Create-prompt makes a new version on each successful creation. Feedback is an
+explicit application assessment, not automatically collected end-user feedback.
+
+## MCP, skills and local workflows
+
+```sh
+dreamtune mcp tools
+dreamtune mcp call model_limits --file arguments.json
+dreamtune skills list
+dreamtune skills install all --directory ./agent-skills
+dreamtune research --file research.json
+dreamtune agent --file agent.json
+```
+
+Use {} in arguments.json for model_limits. Bare dreamtune mcp starts stdio and
+waits for protocol input; it is not an interactive chat.
+
+See [research](/tutorials/research-agent), [tool agent](/tutorials/tool-calling-agent)
+and [MCP tools](/reference/mcp-tools).

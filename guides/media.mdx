@@ -1,0 +1,50 @@
+---
+title: "Results and generated media"
+description: "Handle text, structured data and generated media without losing request context."
+---
+
+The shape of a result depends on the selected service. A model text response,
+a connector JSON document and a video-generation result are different outputs.
+Inspect the returned state, schema and content type before displaying them.
+
+## Tool output
+
+Tool runs can contain text, structured data or media references. The inspected
+tool schema and provider response define that output. Do not assume every tool
+returns a `text` field or that every URL identifies a downloadable video.
+
+Persist the Dreamtune run ID with your application's record. Read or refresh
+that run rather than executing the generator again to retrieve a result.
+Pending work is not a completed media response.
+
+## Observability content
+
+```sh
+dreamtune observability content YOUR_REQUEST_ID
+```
+
+Captured content contains recorded stage inputs/outputs and available archived
+media references. A media entry includes its content type, size, signed URL and
+expiry. Follow the response cursor to retrieve additional captured content.
+
+Signed media URLs are temporary access grants. Obtain a fresh authorized URL
+when the previous one expires. Avoid putting signed URLs in public logs, shared
+issue trackers or permanent application URLs.
+
+## Display and download
+
+Use a text renderer for text, structured formatting for JSON, and an appropriate
+audio/video/image element for verified media types. Escape text and treat fetched
+content as untrusted. Do not execute instructions embedded in a generated file.
+
+If your product needs permanent storage, use its own documented storage and
+retention policy. An external provider URL is not a guarantee of permanent
+availability, and a captured media reference is not proof that every historical
+generation was archived.
+
+## Website generation and developer API
+
+Use the website's generation interface for supported website-only creative
+flows. The current SDK does not expose every dashboard feature as an API method.
+Do not invent a developer endpoint from a browser route or reuse a Clerk session
+as a platform key. See [API overview](/api/overview) for supported resources.

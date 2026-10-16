@@ -1,0 +1,82 @@
+---
+title: "Build a function-calling agent"
+description: "Map approved function calls to catalog tools in a bounded local model/tool loop."
+---
+
+dreamtune agent runs a local model/tool loop through MCP. You explicitly map each
+function to a catalog endpoint. A model cannot gain access by inventing a new
+function name.
+
+## Prepare
+
+Configure the [CLI environment](/reference/environment), model/tool scopes and
+wallet. Choose a model supporting function calls and inspect the tool schema.
+The example is for a body-based search tool; adapt it to the endpoint you select.
+
+## Save agent.json
+
+```json
+{
+  "question": "Find official release notes and summarize the three main changes.",
+  "model": "YOUR_EXACT_MODEL_ID",
+  "maxOutputTokens": 800,
+  "maxOperations": 5,
+  "maxTotalMinor": "100000",
+  "maxToolOutputChars": 16000,
+  "idempotencyKey": "research-agent-20261016-001",
+  "tools": [
+    {
+      "definition": {
+        "type": "function",
+        "function": {
+          "name": "search_web",
+          "description": "Search public web pages.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "body": {
+                "type": "object",
+                "properties": { "query": { "type": "string" } },
+                "required": ["query"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["body"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "provider": "YOUR_PROVIDER",
+      "endpoint": "YOUR_ENDPOINT"
+    }
+  ]
+}
+```
+
+## Run
+
+```sh
+dreamtune agent --file agent.json
+```
+
+The runner submits a model turn, validates returned function arguments, executes
+the mapped tool and returns a tool message with the matching call ID. It retains
+assistant messages and provider reasoning details for continuation.
+
+Operations run sequentially. Derived operation keys use the saved workflow key
+and operation index. Preserve the root key and configuration during recovery.
+
+## Interpret and bound execution
+
+The response includes stage, totalMinor, trace and messages. Check stage for
+completed, pending, failed or budget-stopped work. Earlier successful operations
+remain billable if a later step fails.
+
+maxOperations bounds the loop; maxToolOutputChars bounds source input.
+maxTotalMinor checks between steps, so it is not a hard ceiling for the next
+operation. Closing the process does not terminate a GPU.
+
+Begin with one read-oriented tool. Check arguments, source citations and traces
+before adding mutating endpoints. Never expose all tools or unrestricted shell
+access to compensate for an unreliable prompt. For a custom implementation, see
+[function calling](/guides/function-calling).

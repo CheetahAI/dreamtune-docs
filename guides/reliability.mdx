@@ -1,0 +1,56 @@
+---
+title: "Request lifecycle and recovery"
+description: "Recover safely from pending work, timeouts and uncertain submissions."
+---
+
+An HTTP response and a completed provider operation are different events.
+A successful HTTP status can return a pending or failed run. Inspect the
+returned `state` and retain the Dreamtune run or job ID.
+
+## Before submitting
+
+1. Validate the selected model, tool schema or compute capacity.
+2. Save the exact payload and a unique idempotency key.
+3. Check that the workspace has credit and the key has the required access.
+4. Submit once and persist the returned record ID.
+
+Idempotency keys accept 16–128 letters, digits, underscores or hyphens. A UUID
+is a suitable saved identifier. Do not put secrets or personal information in it.
+
+## Reuse a request safely
+
+Replaying the same creation operation with the same key and identical input
+recovers its existing record. Changing its input is a conflict. Giving the same
+intended operation a new key can execute and charge it again.
+
+SDK, CLI and MCP do not automatically switch providers, select another model or
+blindly retry a paid creation call. Your application decides when another read
+or an explicitly new operation is appropriate.
+
+## When a request times out
+
+A timeout means the client stopped waiting. It does not establish whether the
+upstream accepted the work. Check the saved run; if no ID reached the client,
+recover using the original creation key and identical input.
+
+For tools, `refreshToolRun` checks the upstream receipt. For models, `getRun`
+reads/reconciles the saved operation. For compute, inspect the existing job and
+call stop when you want the rental to end. Cancelling an HTTP wait does not
+terminate a machine.
+
+## Reconciliation states
+
+`needs_reconciliation` means acceptance, output or billing cannot yet be verified.
+Do not convert it into success, assume a free failure or launch replacements.
+The workspace can retain admission while potentially active work is unresolved.
+Keep the run ID, saved key and non-secret timestamps for investigation.
+
+## Workflow costs
+
+Successful earlier operations remain billable if a later step fails. A local
+agent's operation budget stops additional work after a settled result reaches
+its allowance; one result can cross that amount. See [billing](/billing).
+
+When implementing a polling loop, bound its duration and read frequency. Poll the
+existing record rather than submitting new work. Handle terminal failure and
+reconciliation explicitly instead of waiting indefinitely.

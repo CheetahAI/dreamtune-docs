@@ -1,0 +1,66 @@
+---
+title: "Compute API"
+description: "Read GPU capacity, create workspace rentals, retrieve access and terminate paid machines."
+---
+
+Prefix: /v1/developer/compute-jobs. Reads need compute:read; creation and
+termination need the corresponding compute execution access.
+
+| Method | Path after prefix | Input                           | Purpose                                         |
+| ------ | ----------------- | ------------------------------- | ----------------------------------------------- |
+| GET    | /catalog          | None                            | Types, regions, specifications and hourly rates |
+| POST   | Empty             | Creation JSON, Idempotency-Key  | Launch one rental                               |
+| GET    | Empty             | limit required, cursor optional | Paginated owned jobs                            |
+| GET    | /{id}             | Owned job ID                    | Reconcile status and usage                      |
+| POST   | /{id}/cancel      | No request body                 | Stop and settle                                 |
+| GET    | /{id}/notebook    | Owned job ID                    | Private notebook URL                            |
+
+## Catalog and launch
+
+Read the live catalog rather than hardcoding GPU availability. Types contain
+name, description, GPU, architecture, hourlyCents, regions and specs. Region
+entries contain a name and description. specs describes vCPUs, memory, storage
+and GPU count.
+
+```json
+{
+  "instanceType": "YOUR_CATALOG_TYPE",
+  "region": "YOUR_CATALOG_REGION",
+  "publicKey": "YOUR_SSH_PUBLIC_KEY"
+}
+```
+
+Supply a valid SSH public key, never a private key. Instance type is at most 100
+letters/digits/underscores/hyphens; region is at most 60 lowercase letters,
+digits/hyphens. publicKey is bounded to 4096 characters and accepts the supported
+SSH key formats.
+
+Persist the idempotency key before creation. Availability can change between
+catalog inspection and launch. Do not launch a second machine to resolve an
+ambiguous response.
+
+## Pagination and state
+
+List limit is 1–100. Pass nextCursor unchanged for the next page. The response
+contains jobs, pageSize, total, hasMore and nextCursor; a final page has a null
+nextCursor.
+
+States include queued, registering_key, key_registered, launching,
+needs_reconciliation, running, terminating, terminated and failed. Read the
+saved job to confirm its actual state. A local timeout does not terminate it.
+
+Returned fields may include providerStatus, ip, activeAt, billingStoppedAt,
+billedMinutes, terminationReason and receipt values. Billing metadata is
+available only when the corresponding lifecycle event has occurred.
+
+## Access and termination
+
+Notebook URLs contain private access material; do not log or share them.
+For SSH, use your corresponding private key and validate the host identity.
+The hosted API cannot recover a lost private key. The CLI can prepare and store
+local access before launch; see [GPU access](/guides/gpu-access).
+
+Call cancel, then verify terminated status and final usage. Closing SSH,
+ending an agent or revoking a local shell session is not a stop request.
+There is no automatic persistent-volume service implied by included machine
+disk. Copy required files before terminating the machine.

@@ -1,0 +1,52 @@
+---
+title: "Workspaces and project access"
+description: "Understand ownership, API keys, end-user attribution and shared execution limits."
+---
+
+A workspace owns its wallet, keys, requests, GPU jobs and observability records.
+An API key identifies exactly one workspace. Your application supplies that key;
+it does not select a workspace by adding a tenant ID to each request.
+
+## Choose the owning workspace
+
+Before creating a key or adding credit, check the workspace selected in the
+dashboard. Credit in one workspace does not fund a key owned by another.
+Production `dt_live_` and development `dt_dev_` credentials belong to their
+respective environments and cannot be interchanged.
+
+For organization workspaces, execution can also depend on current membership
+and the operation permissions assigned to the member. Possessing an old session
+does not bypass a changed membership or resource ownership check.
+
+## Separate projects with named keys
+
+Create one named key per application or project. Grant only the categories that
+project uses and optionally attach cumulative category spending limits. This
+makes project attribution clearer without creating a new wallet for every key.
+
+Keys in the same workspace share its wallet and admission constraints. Creating
+additional keys does not increase the number of simultaneously active billable
+operations allowed by the workspace.
+
+## End users and conversation sessions
+
+`endUserId` and `sessionId` are application-provided observability labels. They
+help correlate activity inside the key's workspace; they do not authenticate a
+customer or change resource ownership. Use stable, non-sensitive identifiers.
+
+For example, a support application can use one workspace key, a stable customer
+label, and a distinct session label for each conversation. Keep the same session
+label across its turns. See [sessions and users](/guides/sessions).
+
+## Access failures
+
+| Symptom                     | Check                                                   |
+| --------------------------- | ------------------------------------------------------- |
+| An existing run returns 404 | The run ID and the workspace that owns the key          |
+| A request returns 403       | Category scopes and applicable organization permissions |
+| A request returns 402       | Owning wallet credit and the category's key allowance   |
+| Another request returns 409 | An active operation or conflicting replay               |
+| A trace list is incomplete  | Read scopes, date range, category and pagination        |
+
+Keep record IDs returned by the appropriate API. A provider's job ID, a Dreamtune
+run ID and an observability request ID are not interchangeable.

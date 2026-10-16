@@ -1,0 +1,108 @@
+---
+title: "TypeScript SDK reference"
+description: "Client construction, methods, input contracts, receipts and errors in @dreamtune/sdk."
+---
+
+## Install and construct
+
+```sh
+npm install @dreamtune/sdk
+```
+
+Use Node.js 22.20 or later and ESM. Keep the key in a server process.
+
+```ts
+import { DreamtuneClient, DreamtuneError } from "@dreamtune/sdk";
+
+const client = new DreamtuneClient({
+  apiKey: process.env.DREAMTUNE_API_KEY!,
+  baseUrl: process.env.DREAMTUNE_API_ORIGIN!,
+});
+```
+
+Validate your environment first; a TypeScript non-null assertion does not validate
+an environment variable.
+
+| Option        | Contract                                                                           |
+| ------------- | ---------------------------------------------------------------------------------- |
+| apiKey        | Required workspace key                                                             |
+| baseUrl       | Required HTTPS origin, without a resource path; loopback HTTP is permitted locally |
+| fetch         | Optional Fetch-compatible transport                                                |
+| observability | Optional sessionId, endUserId and managed prompt selection                         |
+
+## Tools
+
+| Method                          | Input                                              | Purpose                       |
+| ------------------------------- | -------------------------------------------------- | ----------------------------- |
+| listTools(options?)             | q?, cursor?, limit?, signal?                       | Discover catalog entries      |
+| inspectTool(selection, signal?) | provider, endpoint                                 | Read schema without execution |
+| createToolRun(input)            | provider, endpoint, input, idempotencyKey, signal? | Submit one operation          |
+| listToolRuns(signal?)           | —                                                  | Read recent owned runs        |
+| getToolRun(id, signal?)         | Run ID                                             | Read saved status             |
+| refreshToolRun(id, signal?)     | Run ID                                             | Refresh that upstream job     |
+
+The tool input envelope accepts body, queryParams and pathParams. Inspect the
+selected endpoint before constructing it. See [tool API](/api/tools).
+
+## Models
+
+| client.models method | Input                                                                                                      | Purpose                   |
+| -------------------- | ---------------------------------------------------------------------------------------------------------- | ------------------------- |
+| limits(signal?)      | —                                                                                                          | Read prompt/output limits |
+| createRun(input)     | model, messages, maxOutputTokens, idempotencyKey, optional tools, tool_choice, parallel_tool_calls, signal | Submit a model turn       |
+| listRuns(signal?)    | —                                                                                                          | Read recent requests      |
+| getRun(id, signal?)  | Run ID                                                                                                     | Recover output and status |
+
+Messages support system, user, assistant and tool roles. Function calls are
+returned data: your application must authorize and execute them. Preserve the
+assistant message, call IDs and reasoning details on continuation.
+See [function calling](/guides/function-calling).
+
+The separate `freeChat({model, prompt, signal?})` method is development-only.
+Use models.createRun in production, including for free models.
+
+## Compute
+
+| client.compute method | Input                                                    | Purpose                            |
+| --------------------- | -------------------------------------------------------- | ---------------------------------- |
+| catalog(signal?)      | —                                                        | Read types, rates and availability |
+| createJob(input)      | instanceType, region, publicKey, idempotencyKey, signal? | Launch a paid GPU                  |
+| listJobs(options)     | limit, cursor?, signal?                                  | Read paginated jobs                |
+| getJob(id, signal?)   | Job ID                                                   | Reconcile status/usage             |
+| stopJob(id, signal?)  | Job ID                                                   | Stop and settle                    |
+| notebook(id, signal?) | Job ID                                                   | Read private notebook URL          |
+
+LocalComputeClient is exported from @dreamtune/sdk/node. Its constructor takes
+apiKey, baseUrl, stateDirectory and timeoutMs. Use prepare and start with
+`{name, instanceType, region}`; connection takes id, sshUser, optional name and
+signal. See [GPU access](/guides/gpu-access).
+
+## Observability
+
+| client.observability method | Arguments                                   |
+| --------------------------- | ------------------------------------------- |
+| traces                      | query, signal?                              |
+| executions                  | page, sessionId?, signal?, accountId?       |
+| sessions / users / prompts  | page, signal?                               |
+| content                     | requestId, cursor?, signal?                 |
+| scores                      | requestId, signal?                          |
+| feedback                    | requestId, value (0 or 1), comment, signal? |
+| createPrompt                | definition, signal?                         |
+| getPrompt                   | name, selection, signal?                    |
+| compilePrompt               | name, inputs, signal?                       |
+| labelPrompt                 | name, version-and-labels object, signal?    |
+
+See [observability API](/api/observability) and [prompt API](/api/prompts).
+
+## Cancellation and errors
+
+Pass an AbortSignal to enforce your deadline. Aborting a request does not prove a
+provider stopped or that a GPU terminated. Read the saved operation and stop
+compute explicitly.
+
+Catch DreamtuneError and inspect its status and message without
+logging credentials or customer content. HTTP success can contain a failed or
+pending operation. Check state before using output.
+
+Amounts are integer strings; use BigInt and the returned scale. Pending zero
+charges are not final receipts. See [conventions](/api/conventions).

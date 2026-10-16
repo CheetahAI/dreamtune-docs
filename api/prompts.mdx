@@ -1,0 +1,98 @@
+---
+title: "Prompt API"
+description: "Create versioned text or chat prompts, compile variables and placeholders, and manage deployment labels."
+---
+
+Prefix: /v1/developer/observability/prompts. Reading/compiling requires model
+read access; creation/label changes require model execution access.
+
+| Method | Path after prefix | Input                               | Purpose                               |
+| ------ | ----------------- | ----------------------------------- | ------------------------------------- |
+| GET    | Empty             | page                                | List owned prompts                    |
+| POST   | Empty             | Prompt definition                   | Create a new version, HTTP 201        |
+| GET    | /{name}           | Exactly one query: version or label | Read selected definition              |
+| POST   | /{name}/compile   | Selector and inputs                 | Compile messages without a model call |
+| PATCH  | /{name}/labels    | version and labels                  | Assign deployment labels              |
+
+URL-encode the entire prompt name when constructing its path.
+
+## Create a chat prompt
+
+```json
+{
+  "name": "support/answer",
+  "type": "chat",
+  "messages": [
+    {
+      "role": "system",
+      "content": "Answer for {{product}} using verified information."
+    },
+    { "type": "placeholder", "name": "history" },
+    { "role": "user", "content": "{{question}}" }
+  ],
+  "labels": ["staging"],
+  "tags": ["support"],
+  "config": { "purpose": "customer-support" },
+  "commitMessage": "Initial support instructions"
+}
+```
+
+A text prompt instead sets type text and text to a string. A chat definition
+uses messages. Do not supply incompatible text and chat fields.
+
+Creating again creates a version; it is not an idempotent operation. The response
+identifies name and version. Read that version before promoting a label.
+
+## Compile
+
+```json
+{
+  "version": 1,
+  "variables": {
+    "product": "Dreamtune",
+    "question": "How do I recover a timed-out request?"
+  },
+  "placeholders": {
+    "history": [
+      { "role": "user", "content": "I submitted a model request." },
+      { "role": "assistant", "content": "Keep its saved request identifier." }
+    ]
+  }
+}
+```
+
+Use either version or label, never both. Supply required variables and message
+placeholders explicitly. Missing or malformed inputs fail instead of silently
+producing an incomplete conversation. Compilation is read-only and does not
+spend model credits.
+
+Definitions can compose supported same-workspace text dependencies. Keep names
+and versions deliberate; cross-workspace prompt access is not supported.
+See [prompt workflows](/guides/prompts) for linking a compiled prompt to execution.
+
+## Promote an exact version
+
+```json
+{ "version": 2, "labels": ["production"] }
+```
+
+A label selects one version. A request records the resolved exact version so a
+later label move does not rewrite historical attribution. Review compilation
+and output before moving a production label.
+
+## Input limits
+
+| Field                                  | Limit                                                              |
+| -------------------------------------- | ------------------------------------------------------------------ |
+| Name                                   | 128 characters; slash-separated safe segments; no . or .. segments |
+| Chat messages / placeholder messages   | Up to 20                                                           |
+| Chat message content                   | 8000 characters each                                               |
+| Text prompt                            | 16000 characters                                                   |
+| Variable value                         | String, up to 8000 characters                                      |
+| Variable/placeholder name              | Letter/underscore first, then letters/digits/underscores; up to 64 |
+| Labels/tags                            | Up to 20 unique values, each up to 64 safe characters              |
+| Commit message                         | 500 characters                                                     |
+| Serialized definition / compile inputs | 16000 characters                                                   |
+
+config is a JSON record. Prototype-sensitive names and unsupported fields are
+rejected. Keep credentials out of templates, variables, tags and commit messages.

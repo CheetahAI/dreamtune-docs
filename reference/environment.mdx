@@ -1,0 +1,52 @@
+---
+title: "Environment configuration"
+description: "Required and optional settings for the CLI, local MCP, observability and GPU access."
+---
+
+## Required for CLI and local MCP API operations
+
+| Variable                       | Contract                                                                                                                |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| `DREAMTUNE_API_KEY`            | Your workspace key; production requires a production key                                                                |
+| `DREAMTUNE_API_ORIGIN`         | Explicit HTTPS origin without a path, query, fragment or embedded credentials; loopback HTTP is allowed for development |
+| `DREAMTUNE_REQUEST_TIMEOUT_MS` | Positive integer milliseconds, at most 2147483647                                                                       |
+
+Production uses `https://dreamtune-api.fly.dev`. These settings are read by the
+process running the CLI/MCP server. A desktop client's environment can differ
+from your shell. Missing or invalid required configuration fails explicitly.
+
+The HTTP SDK instead takes `apiKey` and `baseUrl` in `DreamtuneClient` options.
+Pass an `AbortSignal` for caller-managed deadlines.
+
+## Local compute
+
+| Variable                            | When required                                                        |
+| ----------------------------------- | -------------------------------------------------------------------- |
+| `DREAMTUNE_COMPUTE_STATE_DIRECTORY` | Local prepare/start/connection workflows; absolute private directory |
+| `DREAMTUNE_SSH_USER`                | Connecting to the selected machine image over SSH                    |
+
+The state directory stores launch references and SSH access, not the platform
+key. Local MCP advertises its local access tools when that capability is
+configured. Hosted MCP accepts public launch inputs and never writes a private
+key onto the customer's computer.
+
+## Observability context
+
+| Variable                   | Meaning                                                        |
+| -------------------------- | -------------------------------------------------------------- |
+| `DREAMTUNE_SESSION_ID`     | Application conversation label                                 |
+| `DREAMTUNE_END_USER_ID`    | Application end-user label                                     |
+| `DREAMTUNE_PROMPT_NAME`    | Managed prompt name                                            |
+| `DREAMTUNE_PROMPT_VERSION` | Exact managed prompt version; exclusive with label             |
+| `DREAMTUNE_PROMPT_LABEL`   | Deployment label; exclusive with version                       |
+| `DREAMTUNE_PROMPT_INPUTS`  | JSON object containing optional `variables` and `placeholders` |
+
+A prompt selection requires its name and exactly one version or label. Supply
+the inputs required by its template. See [managed prompts](/guides/prompts).
+
+## Secret handling
+
+Keep actual keys out of committed JSON, shell history and URLs. Where supported,
+use client-specific secret inputs or environment references. Do not copy one
+editor's substitution syntax into another editor without checking its guide.
+See [coding-agent setup](/agents/overview) for the different configuration shapes.

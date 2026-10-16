@@ -1,0 +1,72 @@
+---
+title: "Local MCP setup"
+description: "Run the published stdio server with explicit credentials, deadlines and optional GPU access."
+---
+
+Local MCP runs `dreamtune mcp` as a child of your agent client. It opens no HTTP
+listener. Standard output carries the protocol; diagnostics go to standard error.
+
+## Install and configure
+
+Install Node.js 22.20 or later, then:
+
+```sh
+npm install --global @dreamtune/sdk
+dreamtune --version
+dreamtune mcp --help
+```
+
+Set `DREAMTUNE_API_KEY`, `DREAMTUNE_API_ORIGIN` and
+`DREAMTUNE_REQUEST_TIMEOUT_MS` for the process your client launches. Use the
+production API origin `https://dreamtune-api.fly.dev` with a production key.
+
+The generic stdio definition is:
+
+```json
+{
+  "mcpServers": {
+    "dreamtune": {
+      "command": "dreamtune",
+      "args": ["mcp"],
+      "env": {
+        "DREAMTUNE_API_ORIGIN": "https://dreamtune-api.fly.dev",
+        "DREAMTUNE_API_KEY": "YOUR_DREAMTUNE_API_KEY",
+        "DREAMTUNE_REQUEST_TIMEOUT_MS": "60000"
+      }
+    }
+  }
+}
+```
+
+Keep the actual key in a private client configuration or use the client's
+documented secret substitution. Do not commit a substituted key. Some clients
+use a different outer object or require an explicit transport type; follow
+[your client's guide](/agents/overview).
+
+## Verify without paid execution
+
+```sh
+dreamtune mcp tools
+```
+
+List the definitions, then ask the client to discover catalog tools. Do not
+launch compute or run a generator merely to check whether the server starts.
+Use [MCP tool reference](/reference/mcp-tools) to identify read and write operations.
+
+## Windows and desktop environments
+
+A desktop agent may not inherit the PATH or variables from your terminal.
+Restart it after changing its environment. If `dreamtune` cannot be resolved,
+use the absolute Node executable and installed package's `dist/cli.js` path,
+with `mcp` as the final argument. Obtain your installation location with
+`npm root --global`; do not copy another machine's path.
+
+Do not start the stdio server in an unrelated background terminal: the client
+must manage its input/output connection. Do not insert ordinary logging on stdout.
+
+## Optional local compute
+
+Set `DREAMTUNE_COMPUTE_STATE_DIRECTORY` to an absolute private directory to enable
+the local compute-access tools. An invalid supplied directory is an error.
+Without that optional local capability, the API compute tools remain available
+with their explicit public-key contract. See [GPU access](/guides/gpu-access).

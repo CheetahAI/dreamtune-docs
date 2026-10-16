@@ -1,0 +1,80 @@
+---
+title: "Managed prompts and versions"
+description: "Create, compile and label reusable chat or text prompts."
+---
+
+Managed prompts let you reuse a template while preserving the exact version
+associated with a model request. Read access requires `models:read`; mutations
+require `models:run` and applicable workspace permission.
+
+## Create a chat prompt
+
+```typescript
+const saved = await client.observability.createPrompt({
+  name: "support/answer",
+  type: "chat",
+  messages: [
+    { role: "system", content: "Answer in {{language}}." },
+    { role: "user", content: "{{question}}" },
+  ],
+  labels: ["staging"],
+  tags: ["support"],
+  commitMessage: "Create the support answer template",
+});
+```
+
+The result identifies the saved name and version. A new version preserves
+version selection; changing a deployment label changes which version that label
+selects for subsequent requests.
+
+## Compile a selected version
+
+```typescript
+const compiled = await client.observability.compilePrompt("support/answer", {
+  version: saved.version,
+  variables: {
+    language: "English",
+    question: "How do I read a saved run?",
+  },
+});
+console.log(compiled.messages);
+```
+
+Choose exactly one of `version` or `label`. Missing required template inputs
+fail explicitly. Variables are strings. Message placeholders supply arrays of
+system/user/assistant messages; they are not arbitrary raw objects.
+
+## Promote with a label
+
+```typescript
+await client.observability.labelPrompt("support/answer", {
+  version: saved.version,
+  labels: ["production"],
+});
+```
+
+Read the selected prompt with `getPrompt(name, { label: "production" })`.
+This label mutation assigns the supplied labels; inspect the result rather than
+assuming an append-only operation.
+
+## Link model observations
+
+An SDK `observability.prompt` selection takes `name`, exactly one `version` or
+`label`, and the required variables/placeholders. CLI/local MCP use
+`DREAMTUNE_PROMPT_NAME`, one of `DREAMTUNE_PROMPT_VERSION` or
+`DREAMTUNE_PROMPT_LABEL`, and optional JSON `DREAMTUNE_PROMPT_INPUTS`.
+The resolved exact version is linked to the generation. Keep selection and
+inputs unchanged when replaying an operation.
+
+## Template and size rules
+
+- Names are at most 128 characters, with slash-separated alphanumeric, underscore,
+  period or hyphen segments; `.` and `..` path segments are not accepted.
+- Chat definitions contain 1–20 messages/placeholders; text definitions use `text`
+  and cannot also contain `messages`.
+- String variables and message content are at most 8,000 characters. Template
+  inputs serialize to at most 16,000 characters.
+- Labels and tags are unique arrays of at most 20 entries; label strings accept
+  letters, digits, underscores, periods and hyphens, up to 64 characters.
+
+See [prompt API reference](/api/prompts) for the complete operation list.

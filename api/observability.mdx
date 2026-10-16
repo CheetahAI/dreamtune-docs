@@ -1,0 +1,77 @@
+---
+title: "Observability API"
+description: "Read scoped request stages, sessions, users, captured content, media, scores and feedback."
+---
+
+Prefix: /v1/developer/observability. Requests are scoped to the key's workspace.
+End-user labels are attribution; they cannot expand ownership.
+
+| Method | Path after prefix       | Input                                   | Purpose                                 |
+| ------ | ----------------------- | --------------------------------------- | --------------------------------------- |
+| GET    | /traces                 | category, from, to; cursor?, requestId? | Paginated request stages                |
+| GET    | /executions             | page, sessionId?, accountId?            | Conversation request list               |
+| GET    | /sessions               | page                                    | Related sessions                        |
+| GET    | /users                  | page                                    | Attributed account list                 |
+| GET    | /prompts                | page                                    | Prompt list                             |
+| GET    | /requests/{id}/content  | cursor?                                 | Captured stage input/output and media   |
+| GET    | /requests/{id}/scores   | None                                    | Available evaluations                   |
+| POST   | /requests/{id}/feedback | value, comment                          | Explicit helpfulness feedback, HTTP 202 |
+
+## Trace query
+
+category must be model, tool, compute or all. from and to are UTC calendar dates
+formatted YYYY-MM-DD. The interval is limited to 93 calendar days inclusive.
+When requestId is supplied, category must be a specific category rather than
+all. Request IDs use 64 lowercase hexadecimal characters. Cursors are opaque,
+bounded values.
+
+```sh
+curl --fail-with-body \
+  "$DREAMTUNE_API_ORIGIN/v1/developer/observability/traces?category=model&from=2026-10-01&to=2026-10-16" \
+  -H "Authorization: Bearer $DREAMTUNE_API_KEY"
+```
+
+The key needs read access to the selected category. category all requires all
+three category read scopes. Follow returned pagination; one page is not a
+complete export.
+
+## Sessions and users
+
+Page numbers are 1–9999. Use returned session/account identifiers for the
+execution filters. A caller-supplied endUserId is not the same as a verified
+platform account identity. See [sessions and attribution](/guides/sessions).
+
+Sessions group captured executions; they do not automatically import customer
+history that was never sent through Dreamtune. Only retained content is replayable.
+
+## Captured content and media
+
+The content response includes requestId, sessionId, data, media and nextCursor.
+Stage data includes id, stage, startTime, input and output, with prompt name and
+version when captured. Media entries include id, contentType, size, url and
+expiresAt. Use the content cursor until all required pages have been read.
+
+Signed media URLs expire. Refresh authorized content access instead of treating
+a URL as permanent public storage. Historical traces may lack capture or media
+that was not archived. See [media](/guides/media).
+
+## Feedback and assessments
+
+```json
+{
+  "value": 0,
+  "comment": "The answer cited a page that did not support its claim."
+}
+```
+
+value is 0 or 1; comment is bounded to 500 characters. Feedback is one
+account/request assessment, not an editable chat message. Repeating it does not
+replace an existing assessment.
+
+Your application must provide a feedback button or another explicit collection
+flow. Langfuse does not know whether the user liked a response unless feedback
+is submitted or a configured evaluator assesses it. Scores are judgments with
+specific criteria; they are not proof of factual accuracy or agreement violation.
+Some requests may have no assessment yet.
+
+Prompt creation and selection are documented separately in [prompt API](/api/prompts).
