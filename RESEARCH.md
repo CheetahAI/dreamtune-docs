@@ -130,3 +130,13 @@ The source archive response is HTTP 200. Browser visual/interaction verification
 is unavailable: Computer Use currently inventories no browsers or native apps.
 
 The Dreamtune logo now uses the documented logo.href setting to open https://dreamtunelabs.com. Both logo variants remain unchanged. Verified against Context7 and the official Appearance and branding logo section before the change.
+
+## Orange logo follow-up
+
+The owner requested orange branding. Both SVG wordmarks and diamond marks now use
+the existing website accent #e65b3f, with the favicon matching. Geometry, text,
+accessibility labels, theme cutouts and the homepage destination are preserved.
+This is a local SVG color edit with no library/API/configuration contract change;
+no new external integration lookup or dependency upgrade applies. Mint CLI remains
+4.2.1042. Native Hurl first reproduced the missing orange fills on all three live
+assets; the homepage-link assertion already passed.
