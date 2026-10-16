@@ -121,3 +121,12 @@ stale-file failure and initial formatting failures were corrected, not counted
 as passes. The existing unrelated ToolOutput image optimization warning remains.
 Editor examples are documentation-verified, not proof of paid execution in every
 editor. Browser and production delivery checks are recorded after publication.
+
+Public delivery exposed a Mintlify asset boundary: Markdown skill downloads and
+native discovery succeed, while the repository ZIP is not served at a docs URL.
+The download link now targets its verified public GitHub raw asset. This keeps
+one maintained archive, uses the existing Git publication and adds no service.
+The source archive response is HTTP 200. Browser visual/interaction verification
+is unavailable: Computer Use currently inventories no browsers or native apps.
+
+The Dreamtune logo now uses the documented logo.href setting to open https://dreamtunelabs.com. Both logo variants remain unchanged. Verified against Context7 and the official Appearance and branding logo section before the change.
