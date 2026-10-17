@@ -140,3 +140,13 @@ This is a local SVG color edit with no library/API/configuration contract change
 no new external integration lookup or dependency upgrade applies. Mint CLI remains
 4.2.1042. Native Hurl first reproduced the missing orange fills on all three live
 assets; the homepage-link assertion already passed.
+
+## Production API hostname, 2026-10-17
+
+The owner authorized api.dreamtunelabs.com for the existing production backend.
+Seven customer pages now use that HTTPS origin for SDK, CLI and local MCP setup.
+Execution MCP remains mcp.dreamtunelabs.com/mcp; documentation MCP remains
+docs.dreamtunelabs.com/mcp. No tool schema, package version or vendor client
+configuration syntax changes. DNS/TLS and client publication evidence is in the
+platform repository's docs/deployment/api-domain.md. The existing Mint 4.2.1042
+validation/link commands are retained; this edit changes endpoint text only.
