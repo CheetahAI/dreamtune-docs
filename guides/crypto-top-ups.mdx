@@ -4,8 +4,9 @@ description: "Request a credit purchase, pay from an authorized wallet and wait 
 ---
 
 <Info>
-The crypto top-up API and billing MCP tools are awaiting deployment. Until the
-rollout is complete, use [dashboard crypto checkout](https://dreamtunelabs.com/dashboard/usage/).
+Use the crypto top-up API, SDK version 0.1.2 or hosted billing MCP tools.
+[Dashboard crypto checkout](https://dreamtunelabs.com/dashboard/usage/) is also
+available.
 </Info>
 
 The agent funding flow creates a purchase of USD-denominated Dreamtune credit.
@@ -40,8 +41,8 @@ increase the purchased credit. Asset/network minimums can change.
 
 ## Use MCP
 
-The hosted connection will expose `wallet_balance`, `crypto_top_up_options`,
-`create_crypto_top_up`, `get_crypto_top_up` and `check_crypto_top_up` after rollout.
+The hosted connection exposes `wallet_balance`, `crypto_top_up_options`,
+`create_crypto_top_up`, `get_crypto_top_up` and `check_crypto_top_up`.
 Use [the MCP connection guide](/connect/mcp) with your scoped workspace key.
 These tools request and track a payment. Your separate wallet integration
 authorizes, signs and broadcasts the transfer.
