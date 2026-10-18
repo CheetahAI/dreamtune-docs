@@ -1,0 +1,62 @@
+---
+title: "Fund an agent with crypto"
+description: "Request a credit purchase, pay from an authorized wallet and wait for verified Dreamtune credit."
+---
+
+<Info>
+The crypto top-up API and billing MCP tools are awaiting deployment. Until the
+rollout is complete, use [dashboard crypto checkout](https://dreamtunelabs.com/dashboard/usage/).
+</Info>
+
+The agent funding flow creates a purchase of USD-denominated Dreamtune credit.
+Your agent's wallet signs the crypto transfer. Dreamtune supplies payment
+instructions and verifies settlement; it never needs a seed phrase or private key.
+
+## Before you start
+
+Use a workspace key with explicit `billing:read` and `billing:topup` permissions.
+Existing keys do not gain billing access automatically. Model, tool and compute
+permissions remain separate. A zero balance does not prevent requesting a top-up.
+
+Configure your wallet's transfer limits and allowed assets/networks independently.
+The Dreamtune key does not grant permission to move funds from that wallet.
+
+## Request and pay
+
+1. Read `GET /v1/developer/billing/balance`.
+2. Discover enabled assets with `GET /v1/developer/billing/crypto/options`.
+3. Select an asset `code` and request options again with `?currency=<code>` to
+   obtain its current gateway minimum. Limits are USD cents.
+4. Save an idempotency key, then create a top-up with a decimal USD `amount` and
+   the selected `payCurrency`. Reuse that key only with identical parameters.
+5. Transfer only when `instructionsState` is `ready` and the instructions have
+   not expired. Verify the exact asset, network, address, amount and required memo.
+6. Refresh the saved top-up until `state` is `credited` before spending the credit.
+
+See the [billing endpoint reference](/api/billing) for routes, fields and errors.
+The requested USD amount is wallet credit. The platform fee is included in the
+payment price; gateway and sending-network charges may also apply. They do not
+increase the purchased credit. Asset/network minimums can change.
+
+## Use MCP
+
+The hosted connection will expose `wallet_balance`, `crypto_top_up_options`,
+`create_crypto_top_up`, `get_crypto_top_up` and `check_crypto_top_up` after rollout.
+Use [the MCP connection guide](/connect/mcp) with your scoped workspace key.
+These tools request and track a payment. Your separate wallet integration
+authorizes, signs and broadcasts the transfer.
+
+## Recover an uncertain request
+
+Read the saved top-up or repeat identical creation input with its original
+idempotency key. Do not generate another intent just because a response was lost.
+`creating` and `needs_reconciliation` instructions are not permission to transfer.
+An expired quote must not be paid or silently refreshed.
+
+`ready` means the purchase was created, not that it was paid. Only `credited`
+establishes funding. A client-supplied transaction hash or checkout redirect does
+not prove settlement. Partial, repeated or wrong-asset deposits may need support
+review. Never reuse an old deposit address for a new purchase.
+
+Before enabling unattended replenishment, complete a controlled funding test,
+verify the resulting balance and inspect the next authorized run's charge.

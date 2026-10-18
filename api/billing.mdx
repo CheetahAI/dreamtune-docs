@@ -1,0 +1,92 @@
+---
+title: "Billing API"
+description: "Balance, crypto top-up options, payment instructions and verified funding status."
+---
+
+<Info>
+These endpoints are awaiting deployment. Current funding remains available in
+[Usage & billing](https://dreamtunelabs.com/dashboard/usage/).
+</Info>
+
+Base URL: `https://api.dreamtunelabs.com`. Send your workspace key as
+`Authorization: Bearer YOUR_DREAMTUNE_API_KEY`. Workspace identity comes from
+that key; do not send a tenant ID, destination override or payment-provider credential.
+
+| Method | Path | Permission |
+| --- | --- | --- |
+| GET | `/v1/developer/billing/balance` | `billing:read` |
+| GET | `/v1/developer/billing/crypto/options` | `billing:read` |
+| POST | `/v1/developer/billing/crypto/top-ups` | `billing:topup` |
+| GET | `/v1/developer/billing/crypto/top-ups/:id` | `billing:read` |
+| POST | `/v1/developer/billing/crypto/top-ups/:id/check` | `billing:topup` |
+
+## Balance and options
+
+Balance returns `workspaceId`, `currency`, `scale` and signed `available`
+micro-units. With USD scale 6, `"1000000"` means USD 1.00. A completed usage
+charge can leave a negative balance; new paid work then requires more credit.
+
+Options returns enabled `assets`, exact `networks`, `currency`,
+`topUpFeeBasisPoints`, `min` and `max`. Supply `?currency=<asset-code>` to check
+that asset/network's current minimum. `min` and `max` use USD cents. Choose the
+returned code rather than guessing a currency ticker or chain suffix.
+
+## Create a top-up
+
+The request requires `Idempotency-Key`: 16–128 ASCII letters, digits, underscores
+or hyphens. Save it before sending. JSON accepts only:
+
+```json
+{
+  "amount": "10.00",
+  "payCurrency": "usdcsol"
+}
+```
+
+This illustrates a USD 10 credit request. Choose an enabled `payCurrency` and
+check its minimum first. `amount` is a decimal USD string with at most two
+fractional digits. The fee is calculated by the server. A repeated key with
+different parameters returns 409.
+
+The response includes `id`, `workspaceId`, gross USD-cent `amount`, net credit
+micro-units in `credit`, `currency`, `payCurrency`, `state`, `createdAt` and the
+saved `topUpFee`. Agent requests also include `instructionsState`; verified
+instructions appear as `paymentInstructions`:
+
+| Field | Meaning |
+| --- | --- |
+| paymentId | Gateway payment reference, not a client proof of payment |
+| address | Deposit address for this purchase |
+| amount | Exact crypto decimal string; convert to atomic units in your wallet |
+| payCurrency | Selected asset/network code |
+| network | Exact provider network identifier |
+| expiresAt | UTC payment-quote expiry |
+| memo | Required memo/tag, or null |
+| tokenAddress | Token contract identity when supplied, or null |
+
+Only transfer with `instructionsState: ready` and future expiry, after verifying
+asset/network/token identity and your wallet policy. Do not send private keys.
+An ambiguous creation is saved for reconciliation and is never automatically
+resubmitted to create another payment.
+
+## Read and check
+
+GET reads the workspace-owned saved record without contacting the gateway.
+POST `/:id/check` accepts no body and refreshes provider status. It can apply a
+verified, fully settled purchase to the wallet once. Do not send a transaction
+hash, payment amount or `paid` assertion. Resource IDs are 64 lowercase hex digits.
+
+Purchase states are `creating`, `ready`, `needs_reconciliation` and `credited`.
+Instruction states are `creating`, `ready` and `needs_reconciliation`.
+`paymentStatus` reports the saved gateway state when known. Only purchase state
+`credited` establishes spendable funding.
+
+## Errors
+
+400 indicates malformed input, a disallowed field or amount outside configured
+or gateway limits. 401 rejects an invalid/expired key. 403 rejects missing billing
+permission. 404 includes another workspace's purchase. 409 includes conflicting
+intent parameters or payment mismatch. 503 indicates an unavailable service or
+an uncertain payment operation; inspect saved state before retrying.
+
+See [the funding workflow](/guides/crypto-top-ups) for transfer controls and recovery.
