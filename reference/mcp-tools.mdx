@@ -27,6 +27,26 @@ Read both MCP isError and the underlying operation state. A transported success
 can describe a pending or failed operation. Never duplicate an uncertain paid
 submission with a fresh idempotency key.
 
+## Wallet funding
+
+Available in local SDK version 0.1.2 and hosted MCP. Existing API keys do not gain
+billing permissions automatically.
+
+| MCP tool | Arguments | Required permission |
+| --- | --- | --- |
+| `wallet_balance` | None | `billing:read` |
+| `crypto_top_up_options` | `payCurrency?` | `billing:read` |
+| `create_crypto_top_up` | `amount`, `payCurrency`, `idempotencyKey` | `billing:topup` |
+| `get_crypto_top_up` | `id` | `billing:read` |
+| `check_crypto_top_up` | `id` | `billing:topup` |
+
+`amount` is a decimal USD string. Creation returns verified payment instructions;
+it does not sign or send crypto. Use a separately authorized wallet, check the
+exact asset/network, required memo and expiry, and wait for `state: "credited"`.
+Reuse the saved idempotency key with identical input after uncertainty. Never
+provide a private key or treat a client transaction hash as payment proof.
+See [wallet funding](/billing#agent-crypto-top-ups) for units and recovery.
+
 ## Compute
 
 | MCP tool           | Arguments                                       | Effect                 |

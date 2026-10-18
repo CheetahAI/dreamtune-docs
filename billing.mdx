@@ -7,6 +7,49 @@ Add credit in [Usage & billing](https://dreamtunelabs.com/dashboard/usage/).
 The wallet belongs to the workspace. API keys spend from that workspace's
 available balance according to their enabled capabilities.
 
+## Agent crypto top-ups
+
+Use SDK version 0.1.2 or the hosted MCP tools to request payment instructions
+and check verified settlement. Create a key with Billing access in
+[API keys](https://dreamtunelabs.com/dashboard/api-keys/). Existing keys retain
+their original permissions; no billing access is added automatically.
+
+`billing:read` permits balance, options and saved-payment reads.
+`billing:topup` permits creation and status checks. These permissions do not
+authorize wallet withdrawals or model, tool or compute execution. Funding does
+not require a positive Dreamtune balance.
+
+1. Read the balance with `wallet_balance` or `client.billing.balance()`.
+2. List options with `crypto_top_up_options` or `client.billing.cryptoOptions()`.
+   Select an exact asset/network code and query it to obtain its current minimum.
+3. Save an idempotency key before calling `create_crypto_top_up` or
+   `client.billing.createCryptoTopUp()`. Supply a decimal USD string such as
+   `"10.00"` and an enabled `payCurrency` code.
+4. Transfer only when `instructionsState` is `ready` and the quoted expiry is
+   future. Your separately authorized wallet must check the exact address,
+   asset, network, amount, required memo and token identity. Dreamtune never
+   requests its private key or seed phrase.
+5. Read the saved top-up and use `check_crypto_top_up` or
+   `client.billing.checkCryptoTopUp()` to refresh its status. Resume paid work
+   only after `state` is `credited` and the owning wallet has credit.
+
+Balance `available`, credit and funding-fee amounts are integer strings in USD
+millionths. Options `min` and `max` and top-up `amount` use USD cents. The creation
+input `amount` is the requested net USD credit; the response records the gross
+purchase and saved fee. The crypto transfer amount is a decimal string in the
+selected asset, not cents or USD millionths.
+
+After an uncertain request, reuse the same idempotency key with identical input
+or inspect the saved top-up. Never create a fresh intent or send a second
+transfer just because confirmation is delayed. A `ready` payment or a supplied
+transaction hash does not prove funding. Partial, incorrect-network or expired
+payments require reconciliation; never reuse an old deposit address.
+
+API endpoints live under `/v1/developer/billing`: `GET /balance`,
+`GET /crypto/options`, `POST /crypto/top-ups`, `GET /crypto/top-ups/:id` and
+`POST /crypto/top-ups/:id/check`. Creation requires an `Idempotency-Key` header;
+the check accepts no body. SDK/MCP manage these request details.
+
 ## Optional key limits
 
 You can set separate cumulative spending limits for models, tools and compute

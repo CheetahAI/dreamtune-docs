@@ -20,7 +20,7 @@ The Mintlify CLI is pinned to `mint` 4.2.1042. The latest registry version was
 verified on 2026-10-16 (Asia/Calcutta); no prior CLI dependency existed here.
 Official documentation requires Node 20.17 or later; this project's minimum also
 supports the Dreamtune SDK. Customer examples were checked against the published
-`@dreamtune/sdk` 0.1.1 types, command definitions and README in the platform repo.
+`@dreamtune/sdk` 0.1.2 types, command definitions and README in the platform repo.
 Validation checks documentation, not live paid provider execution.
 
 ## Publish

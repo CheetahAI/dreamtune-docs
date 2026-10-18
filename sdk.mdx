@@ -8,7 +8,7 @@ npm install @dreamtune/sdk
 ```
 
 Use Node.js 22.20 or later and keep your key server-side. The examples target the
-published SDK contract in version 0.1.1.
+published SDK contract in version 0.1.2.
 
 ## Create a client
 
@@ -38,9 +38,14 @@ except for loopback development addresses.
 | Compute         | `compute.catalog`, `compute.createJob`, `compute.listJobs`, `compute.getJob`, `compute.stopJob`, `compute.notebook` |
 | Observability   | `observability.traces`, `executions`, `sessions`, `users`, `content`, `scores`, `feedback`                          |
 | Managed prompts | `observability.prompts`, `createPrompt`, `getPrompt`, `compilePrompt`, `labelPrompt`                                |
+| Wallet funding | `billing.balance`, `billing.cryptoOptions`, `billing.createCryptoTopUp`, `billing.getCryptoTopUp`, `billing.checkCryptoTopUp` |
 
 The observability and prompt methods in this table are on
 `client.observability`. Inputs and return types ship with the package.
+
+Wallet funding requires explicit billing permissions on the API key. The SDK
+creates payment instructions and checks settlement; your separately authorized
+wallet signs transfers. See [agent crypto top-ups](/billing#agent-crypto-top-ups).
 
 ## Deadlines and errors
 

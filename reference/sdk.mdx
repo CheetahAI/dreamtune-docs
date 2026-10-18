@@ -30,6 +30,22 @@ an environment variable.
 | fetch         | Optional Fetch-compatible transport                                                |
 | observability | Optional sessionId, endUserId and managed prompt selection                         |
 
+## Wallet funding
+
+Requires version 0.1.2. Billing permissions are separate from execution scopes.
+
+| Method | Input | Permission |
+| --- | --- | --- |
+| `billing.balance(signal?)` | Optional abort signal | `billing:read` |
+| `billing.cryptoOptions(payCurrency?, signal?)` | Optional enabled asset/network code | `billing:read` |
+| `billing.createCryptoTopUp(input)` | `amount`, `payCurrency`, `idempotencyKey`, optional `signal` | `billing:topup` |
+| `billing.getCryptoTopUp(id, signal?)` | Saved top-up ID | `billing:read` |
+| `billing.checkCryptoTopUp(id, signal?)` | Saved top-up ID | `billing:topup` |
+
+The API returns payment instructions; signing and broadcasting a transfer require
+your separately authorized wallet. Methods do not retry, transfer funds or poll
+automatically. See [wallet funding](/billing#agent-crypto-top-ups).
+
 ## Tools
 
 | Method                          | Input                                              | Purpose                       |
